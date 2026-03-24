@@ -156,3 +156,9 @@ Or paste into Chrome: `file:///path/to/frontend/index.html`
 ## Made By
 
 **Ashmika Jain** 
+<img width="1913" height="903" alt="image" src="https://github.com/user-attachments/assets/313c14ae-43e7-4a3b-8fe2-bad87af42abd" />
+<img width="490" height="812" alt="image" src="https://github.com/user-attachments/assets/c9d98264-b265-4355-b06f-83cc8f90e6e9" />
+<img width="1872" height="882" alt="image" src="https://github.com/user-attachments/assets/034df0f0-921c-478c-bcb3-3426b07d9f07" />
+<img width="1892" height="908" alt="image" src="https://github.com/user-attachments/assets/b0b80c2c-a92f-4d22-a218-6966a23e602a" />
+<img width="1907" height="745" alt="image" src="https://github.com/user-attachments/assets/38e41c32-626a-4e44-80f1-eba315b988f7" />
+<img width="1045" height="771" alt="image" src="https://github.com/user-attachments/assets/f5def74f-a7e8-4cea-a179-1a8eaa3fab0d" />
