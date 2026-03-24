@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WanderWise — Travel India</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:   #1D1D1F;
+      --gray1:   #6E6E73;
+      --gray2:   #F5F5F7;
+      --gray3:   #E8E8ED;
+      --white:   #FFFFFF;
+      --accent:  #E91E8C;
+      --radius:  16px;
+      --nav-h:   68px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--white);
+      color: var(--black);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: var(--nav-h);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px;
+      background: rgba(255,255,255,0.82);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      transition: background 0.3s;
+    }
+    .nav-logo {
+      font-size: 1.25rem; font-weight: 800;
+      letter-spacing: -0.6px; color: var(--black);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a {
+      font-size: 0.875rem; font-weight: 500;
+      color: var(--gray1); text-decoration: none;
+      transition: color 0.2s; letter-spacing: -0.1px;
+    }
+    .nav-links a:hover { color: var(--black); }
+    .nav-cta {
+      padding: 9px 22px; border-radius: 980px;
+      background: var(--black); color: var(--white);
+      font-family: 'Inter', sans-serif; font-size: 0.85rem;
+      font-weight: 600; letter-spacing: -0.2px;
+      border: none; cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .nav-cta:hover { background: #3a3a3c; transform: scale(1.02); }
+
+    /* ─── HERO ─── */
+    .hero {
+      height: 100vh; min-height: 640px;
+      position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+    }
+    .hero-img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; object-position: center;
+      transform: scale(1.04);
+      animation: heroScale 12s ease-in-out infinite alternate;
+    }
+    @keyframes heroScale { to { transform: scale(1); } }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.25) 0%,
+        rgba(0,0,0,0.42) 50%,
+        rgba(0,0,0,0.65) 100%
+      );
+    }
+    .hero-content {
+      position: relative; z-index: 2;
+      padding: 0 24px; max-width: 860px;
+    }
+    .hero-label {
+      display: inline-block;
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-weight: 800; letter-spacing: -2px;
+      line-height: 1.06; color: #fff;
+      margin-bottom: 20px;
+    }
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: rgba(255,255,255,0.72);
+      font-weight: 400; line-height: 1.6;
+      max-width: 520px; margin: 0 auto 40px;
+      letter-spacing: -0.2px;
+    }
+    .hero-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .btn-white {
+      padding: 14px 32px; border-radius: 980px;
+      background: #fff; color: var(--black);
+      font-family: 'Inter', sans-serif; font-size: 0.95rem;
+      font-weight: 600; letter-spacing: -0.3px; border: none;
+      cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+    }
+    .btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.25); }
+    .btn-outline-white {
+      padding: 14px 32px; border-radius: 980px;
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.28);
+      color: #fff; font-family: 'Inter', sans-serif;
+      font-size: 0.95rem; font-weight: 500;
+      letter-spacing: -0.2px; cursor: pointer;
+      transition: background 0.2s;
+      text-decoration: none; display: inline-block;
+    }
+    .btn-outline-white:hover { background: rgba(255,255,255,0.22); }
+
+    /* scroll indicator */
+    .hero-scroll {
+      position: absolute; bottom: 32px; left: 50%;
+      transform: translateX(-50%); z-index: 2;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+    }
+    .hero-scroll span {
+      font-size: 0.68rem; letter-spacing: 2px; text-transform: uppercase;
+      color: rgba(255,255,255,0.45); font-weight: 500;
+    }
+    .scroll-line {
+      width: 1px; height: 40px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.5), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse { 0%,100%{opacity:0.4;transform:scaleY(1)} 50%{opacity:1;transform:scaleY(1.1)} }
+
+    /* ─── STAT STRIP ─── */
+    .stat-strip {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      border-bottom: 1px solid var(--gray3);
+    }
+    .stat-cell {
+      padding: 32px 40px; text-align: center;
+      border-right: 1px solid var(--gray3);
+      transition: background 0.2s;
+    }
+    .stat-cell:last-child { border-right: none; }
+    .stat-cell:hover { background: var(--gray2); }
+    .stat-num {
+      font-size: 2.2rem; font-weight: 800;
+      letter-spacing: -1.5px; color: var(--black);
+      line-height: 1;
+    }
+    .stat-num span { color: var(--accent); }
+    .stat-lbl {
+      font-size: 0.78rem; color: var(--gray1);
+      font-weight: 500; margin-top: 6px;
+      letter-spacing: 0.2px;
+    }
+
+    /* ─── SECTIONS ─── */
+    .section { padding: 100px 48px; }
+    .section-sm { padding: 72px 48px; }
+    .sec-eyebrow {
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 2.5px; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 14px;
+    }
+    .sec-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800; letter-spacing: -1.5px;
+      line-height: 1.1; color: var(--black);
+      margin-bottom: 14px;
+    }
+    .sec-sub {
+      font-size: 1rem; color: var(--gray1);
+      font-weight: 400; line-height: 1.65;
+      max-width: 480px; letter-spacing: -0.1px;
+    }
+    .sec-head {
+      display: flex; justify-content: space-between;
+      align-items: flex-end; margin-bottom: 48px;
+      flex-wrap: wrap; gap: 20px;
+    }
+    .link-arrow {
+      font-size: 0.875rem; font-weight: 600;
+      color: var(--accent); text-decoration: none;
+      display: inline-flex; align-items: center; gap: 4px;
+      transition: gap 0.2s;
+    }
+    .link-arrow:hover { gap: 8px; }
+
+    /* ─── DESTINATION GRID ─── */
+    .dest-search {
+      display: flex; gap: 8px; margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+    .pill-filter {
+      padding: 7px 18px; border-radius: 980px;
+      border: 1px solid var(--gray3); background: var(--white);
+      font-family: 'Inter', sans-serif; font-size: 0.8rem;
+      font-weight: 500; color: var(--gray1); cursor: pointer;
+      transition: all 0.2s; letter-spacing: -0.1px;
+    }
+    .pill-filter.active, .pill-filter:hover {
+      background: var(--black); color: var(--white); border-color: var(--black);
+    }
+
+    .dest-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: 340px 340px;
+      gap: 12px;
+    }
+    .dest-card {
+      position: relative; border-radius: var(--radius);
+      overflow: hidden; cursor: pointer;
+      background: var(--gray2);
+    }
+    .dest-card.span2 { grid-column: span 2; }
+    .dest-card img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center;
+      transition: transform 0.6s cubic-bezier(0.23,1,0.32,1);
+      display: block;
+    }
+    .dest-card:hover img { transform: scale(1.06); }
+    .dest-card-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.72) 0%,
+        rgba(0,0,0,0.1) 55%,
+        transparent 100%
+      );
+    }
+    .dest-card-info {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 28px; color: #fff;
+    }
+    .dest-card-country {
+      font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: rgba(255,255,255,0.55); margin-bottom: 5px;
+    }
+    .dest-card-city {
+      font-size: 1.5rem; font-weight: 700;
+      letter-spacing: -0.6px; line-height: 1.15;
+    }
+    .dest-card.span2 .dest-card-city { font-size: 2rem; }
+    .dest-card-season {
+      margin-top: 6px;
+      font-size: 0.75rem; color: rgba(255,255,255,0.55);
+      font-weight: 500;
+    }
+    .dest-card-btn {
+      position: absolute; top: 20px; right: 20px;
+      width: 38px; height: 38px; border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 1rem;
+      transform: rotate(-45deg);
+      transition: all 0.3s;
+    }
+    .dest-card:hover .dest-card-btn {
+      transform: rotate(0deg);
+      background: var(--accent); border-color: var(--accent);
+    }
+
+    /* ─── PACKAGES ─── */
+    .pkg-bg { background: var(--gray2); }
+    .pkg-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .pkg-card {
+      background: var(--white); border-radius: var(--radius);
+      overflow: hidden;
+      transition: transform 0.3s cubic-bezier(0.23,1,0.32,1), box-shadow 0.3s;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .pkg-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+    }
+    .pkg-img {
+      width: 100%; height: 200px;
+      object-fit: cover; object-position: center;
+      display: block; background: var(--gray3);
+      transition: transform 0.5s;
+    }
+    .pkg-card:hover .pkg-img { transform: scale(1.04); }
+    .pkg-img-wrap { overflow: hidden; }
+    .pkg-body { padding: 24px; }
+    .pkg-tag {
+      font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 8px;
+    }
+    .pkg-card h3 {
+      font-size: 1.05rem; font-weight: 700;
+      letter-spacing: -0.4px; margin-bottom: 6px;
+      color: var(--black);
+    }
+    .pkg-card p {
+      font-size: 0.82rem; color: var(--gray1);
+      line-height: 1.6; margin-bottom: 16px;
+    }
+    .pkg-meta {
+      display: flex; gap: 16px; margin-bottom: 20px;
+      padding-top: 16px; border-top: 1px solid var(--gray3);
+    }
+    .pkg-meta-item .val {
+      font-size: 1rem; font-weight: 700;
+      letter-spacing: -0.4px; color: var(--black);
+    }
+    .pkg-meta-item .lbl {
+      font-size: 0.68rem; color: var(--gray1);
+      font-weight: 500; margin-top: 1px;
+    }
+    .pkg-footer {
+      display: flex; align-items: center;
+      justify-content: space-between;
+    }
+    .pkg-price {
+      font-size: 1.5rem; font-weight: 800;
+      letter-spacing: -1px; color: var(--black);
+    }
+    .pkg-price sub {
+      font-size: 0.72rem; font-weight: 500;
+      color: var(--gray1); vertical-align: middle;
+      letter-spacing: 0;
+    }
+    .btn-dark {
+      padding: 10px 20px; border-radius: 980px;
+      background: var(--black); color: var(--white);
+      font-family: 'Inter', sans-serif; font-size: 0.82rem;
+      font-weight: 600; border: none; cursor: pointer;
+      letter-spacing: -0.2px; transition: background 0.2s, transform 0.2s;
+    }
+    .btn-dark:hover { background: var(--accent); transform: scale(1.04); }
+
+    /* ─── HOW IT WORKS ─── */
+    .how-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 0; border: 1px solid var(--gray3);
+      border-radius: 24px; overflow: hidden;
+    }
+    .how-step {
+      padding: 48px 36px;
+      border-right: 1px solid var(--gray3);
+      transition: background 0.2s;
+    }
+    .how-step:last-child { border-right: none; }
+    .how-step:hover { background: var(--gray2); }
+    .how-num {
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 2px; color: var(--accent);
+      text-transform: uppercase; margin-bottom: 20px;
+    }
+    .how-step h3 {
+      font-size: 1rem; font-weight: 700;
+      letter-spacing: -0.3px; margin-bottom: 10px;
+    }
+    .how-step p {
+      font-size: 0.83rem; color: var(--gray1);
+      line-height: 1.7;
+    }
+
+    /* ─── FEATURE STRIP (full-bleed) ─── */
+    .feature-strip {
+      display: grid; grid-template-columns: 1fr 1fr;
+      min-height: 560px;
+    }
+    .feature-img-col {
+      position: relative; overflow: hidden;
+      background: var(--gray3);
+    }
+    .feature-img-col img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center;
+      display: block;
+      transition: transform 0.8s;
+    }
+    .feature-strip:hover .feature-img-col img { transform: scale(1.04); }
+    .feature-text-col {
+      display: flex; flex-direction: column;
+      justify-content: center; padding: 80px 72px;
+      background: var(--black);
+    }
+    .feature-text-col .sec-eyebrow { color: rgba(255,255,255,0.4); }
+    .feature-text-col .sec-title { color: #fff; }
+    .feature-text-col .sec-sub { color: rgba(255,255,255,0.5); }
+    .feature-text-col .btn-feature {
+      margin-top: 36px; display: inline-flex;
+      align-items: center; gap: 8px;
+      padding: 13px 28px; border-radius: 980px;
+      background: var(--accent); color: #fff;
+      font-family: 'Inter', sans-serif; font-size: 0.88rem;
+      font-weight: 600; border: none; cursor: pointer;
+      letter-spacing: -0.2px; align-self: flex-start;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(233,30,140,0.35);
+    }
+    .feature-text-col .btn-feature:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(233,30,140,0.45); }
+
+    /* ─── TESTIMONIALS ─── */
+    .test-bg { background: var(--black); }
+    .test-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1px; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px; overflow: hidden;
+    }
+    .test-card {
+      background: var(--black); padding: 40px;
+      transition: background 0.3s;
+    }
+    .test-card:hover { background: #111; }
+    .test-rating {
+      display: flex; gap: 3px; margin-bottom: 20px;
+    }
+    .test-rating svg { width: 14px; height: 14px; fill: #FFB340; }
+    .test-quote {
+      font-size: 0.95rem; color: rgba(255,255,255,0.7);
+      line-height: 1.75; margin-bottom: 28px;
+      font-weight: 400; letter-spacing: -0.1px;
+    }
+    .test-author { display: flex; align-items: center; gap: 14px; }
+    .test-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--accent); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.95rem; font-weight: 700; flex-shrink: 0;
+    }
+    .test-name { font-size: 0.875rem; font-weight: 700; color: #fff; letter-spacing: -0.2px; }
+    .test-dest { font-size: 0.75rem; color: rgba(255,255,255,0.35); margin-top: 2px; }
+
+    /* ─── CTA ─── */
+    .cta-section {
+      padding: 120px 48px; text-align: center;
+      background: var(--gray2);
+    }
+    .cta-section .sec-title { margin: 0 auto 14px; max-width: 600px; }
+    .cta-section .sec-sub  { margin: 0 auto 40px; }
+    .cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-accent {
+      padding: 14px 32px; border-radius: 980px;
+      background: var(--accent); color: var(--white);
+      font-family: 'Inter', sans-serif; font-size: 0.95rem;
+      font-weight: 600; letter-spacing: -0.3px; border: none;
+      cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(233,30,140,0.3);
+    }
+    .btn-accent:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(233,30,140,0.4); }
+    .btn-ghost-dark {
+      padding: 14px 32px; border-radius: 980px;
+      background: transparent; color: var(--black);
+      border: 1.5px solid var(--gray3);
+      font-family: 'Inter', sans-serif; font-size: 0.95rem;
+      font-weight: 600; cursor: pointer;
+      text-decoration: none; display: inline-block;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-ghost-dark:hover { border-color: var(--black); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--black); color: rgba(255,255,255,0.4);
+      padding: 64px 48px 36px;
+    }
+    .footer-top {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px; padding-bottom: 48px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      margin-bottom: 32px;
+    }
+    .footer-brand-name {
+      font-size: 1.15rem; font-weight: 800;
+      letter-spacing: -0.5px; color: #fff;
+      margin-bottom: 14px; display: block;
+    }
+    .footer-brand-name span { color: var(--accent); }
+    .footer-brand p {
+      font-size: 0.82rem; line-height: 1.75;
+      max-width: 260px; color: rgba(255,255,255,0.35);
+    }
+    .footer-col h5 {
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      color: rgba(255,255,255,0.5); margin-bottom: 18px;
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-col ul a {
+      font-size: 0.83rem; color: rgba(255,255,255,0.35);
+      text-decoration: none; transition: color 0.2s; letter-spacing: -0.1px;
+    }
+    .footer-col ul a:hover { color: #fff; }
+    .footer-bottom {
+      display: flex; justify-content: space-between;
+      align-items: center; flex-wrap: wrap; gap: 12px;
+      font-size: 0.78rem;
+    }
+
+    /* ─── UTILITIES ─── */
+    .reveal {
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.in { opacity: 1; transform: translateY(0); }
+
+    .toast {
+      position: fixed; bottom: 28px; right: 28px; z-index: 9999;
+      background: var(--black); color: #fff;
+      padding: 13px 20px; border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+      border-left: 3px solid var(--accent);
+      font-size: 0.85rem; font-weight: 500; letter-spacing: -0.1px;
+      transform: translateX(140%); transition: transform 0.4s cubic-bezier(0.23,1,0.32,1);
+    }
+    .toast.show { transform: translateX(0); }
+
+    #scrollTop {
+      position: fixed; bottom: 28px; left: 28px; z-index: 999;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--black); color: #fff; border: none;
+      font-size: 1rem; cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      display: none; align-items: center; justify-content: center;
+      transition: transform 0.2s;
+    }
+    #scrollTop.visible { display: flex; }
+    #scrollTop:hover { transform: scale(1.1); }
+
+    @media (max-width: 900px) {
+      nav { padding: 0 24px; }
+      .nav-links { display: none; }
+      .section { padding: 72px 24px; }
+      .dest-grid { grid-template-columns: 1fr; grid-template-rows: auto; }
+      .dest-card.span2 { grid-column: span 1; }
+      .dest-grid .dest-card { height: 260px; }
+      .pkg-grid { grid-template-columns: 1fr; }
+      .how-grid { grid-template-columns: 1fr; }
+      .how-step { border-right: none; border-bottom: 1px solid var(--gray3); }
+      .feature-strip { grid-template-columns: 1fr; }
+      .feature-img-col { height: 300px; }
+      .test-grid { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+      .stat-strip { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">Wander<span>Wise</span></a>
+  <ul class="nav-links">
+    <li><a href="#destinations">Destinations</a></li>
+    <li><a href="#packages">Packages</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="planner.html">Plan</a></li>
+  </ul>
+  <button class="nav-cta" onclick="window.location='planner.html'">Start Planning</button>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <img class="hero-img"
+    src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=1800&q=85"
+    alt="India travel"
+    onerror="this.style.display='none'"/>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-label">Smart Travel Planning for India</div>
+    <h1>Travel India,<br/>Your Way.</h1>
+    <p class="hero-sub">Discover breathtaking destinations, book curated hotels, and plan your perfect trip — all from one place.</p>
+    <div class="hero-actions">
+      <button class="btn-white" onclick="window.location='planner.html'">Start Planning</button>
+      <a class="btn-outline-white" href="#destinations">Explore Destinations</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</div>
+
+<!-- STAT STRIP -->
+<div class="stat-strip">
+  <div class="stat-cell">
+    <div class="stat-num" id="sDest">5</div>
+    <div class="stat-lbl">Destinations</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-num" id="sPkg">5</div>
+    <div class="stat-lbl">Curated Packages</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-num">5<span>+</span></div>
+    <div class="stat-lbl">Partner Hotels</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-num">100<span>%</span></div>
+    <div class="stat-lbl">Satisfaction</div>
+  </div>
+</div>
+
+<!-- DESTINATIONS -->
+<section class="section" id="destinations">
+  <div class="sec-head">
+    <div>
+      <p class="sec-eyebrow reveal">Destinations</p>
+      <h2 class="sec-title reveal">Where do you<br/>want to go?</h2>
+    </div>
+    <div>
+      <div class="dest-search" id="destFilters">
+        <button class="pill-filter active" onclick="setFilter(this,'')">All</button>
+        <button class="pill-filter" onclick="setFilter(this,'beach')">Beach</button>
+        <button class="pill-filter" onclick="setFilter(this,'mountain')">Mountains</button>
+        <button class="pill-filter" onclick="setFilter(this,'heritage')">Heritage</button>
+        <button class="pill-filter" onclick="setFilter(this,'nature')">Nature</button>
+      </div>
+      <a class="link-arrow" href="planner.html">View all destinations →</a>
+    </div>
+  </div>
+  <div class="dest-grid reveal" id="destGrid">
+    <div style="background:var(--gray3);border-radius:16px;height:100%;grid-column:span 2"></div>
+    <div style="background:var(--gray3);border-radius:16px;height:340px"></div>
+    <div style="background:var(--gray3);border-radius:16px;height:340px"></div>
+    <div style="background:var(--gray3);border-radius:16px;height:340px"></div>
+    <div style="background:var(--gray3);border-radius:16px;height:340px"></div>
+  </div>
+</section>
+
+<!-- PACKAGES -->
+<section class="section pkg-bg" id="packages">
+  <div class="sec-head">
+    <div>
+      <p class="sec-eyebrow reveal">Packages</p>
+      <h2 class="sec-title reveal">Complete trips,<br/>one great price.</h2>
+      <p class="sec-sub reveal">Hotel, transport, and top spots — bundled and ready.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;align-items:flex-end">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+        <button class="pill-filter active" onclick="filterPkgs('all',this)">All</button>
+        <button class="pill-filter" onclick="filterPkgs('low',this)">Under ₹15k</button>
+        <button class="pill-filter" onclick="filterPkgs('mid',this)">₹15k–₹20k</button>
+        <button class="pill-filter" onclick="filterPkgs('high',this)">₹20k+</button>
+      </div>
+      <a class="link-arrow" href="planner.html">See all packages →</a>
+    </div>
+  </div>
+  <div class="pkg-grid" id="pkgGrid">
+    <div class="skel-card" style="height:420px;background:var(--gray3);border-radius:16px"></div>
+    <div class="skel-card" style="height:420px;background:var(--gray3);border-radius:16px"></div>
+    <div class="skel-card" style="height:420px;background:var(--gray3);border-radius:16px"></div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how">
+  <div style="text-align:center;margin-bottom:56px">
+    <p class="sec-eyebrow reveal">Process</p>
+    <h2 class="sec-title reveal">Book in four steps.</h2>
+    <p class="sec-sub reveal" style="margin:0 auto">No hidden fees. No confusion. Just great trips.</p>
+  </div>
+  <div class="how-grid reveal">
+    <div class="how-step">
+      <div class="how-num">Step 01</div>
+      <h3>Pick a destination</h3>
+      <p>Browse our curated list of India's finest destinations and choose the one that calls to you.</p>
+    </div>
+    <div class="how-step">
+      <div class="how-num">Step 02</div>
+      <h3>Set your dates</h3>
+      <p>Choose travel dates and number of guests. We show you real-time availability.</p>
+    </div>
+    <div class="how-step">
+      <div class="how-num">Step 03</div>
+      <h3>Choose hotel & travel</h3>
+      <p>Pick from handpicked hotels and transport options filtered for your destination.</p>
+    </div>
+    <div class="how-step">
+      <div class="how-num">Step 04</div>
+      <h3>Confirm and go</h3>
+      <p>Review your summary and confirm with one click. Time to pack your bags.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE STRIP -->
+<div class="feature-strip">
+  <div class="feature-img-col">
+    <img
+      src="https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=1200&q=85"
+      alt="Kerala backwaters"
+      onerror="this.parentElement.style.background='#1a2e1a'"/>
+  </div>
+  <div class="feature-text-col">
+    <p class="sec-eyebrow">Why WanderWise</p>
+    <h2 class="sec-title">Travel smarter,<br/>not harder.</h2>
+    <p class="sec-sub" style="margin-top:12px">Every detail handled — from the moment you book to the moment you arrive. Transparent pricing, curated stays, and reliable transport in one seamless platform.</p>
+    <button class="btn-feature" onclick="window.location='planner.html'">Plan your trip →</button>
+  </div>
+</div>
+
+<!-- TESTIMONIALS -->
+<section class="section test-bg">
+  <div class="sec-head" style="margin-bottom:48px">
+    <div>
+      <p class="sec-eyebrow" style="color:rgba(255,255,255,0.3)">Reviews</p>
+      <h2 class="sec-title reveal" style="color:#fff">What travellers say.</h2>
+    </div>
+  </div>
+  <div class="test-grid reveal">
+    <div class="test-card">
+      <div class="test-rating">
+        <svg viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+        <svg viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+        <svg viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+        <svg viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+        <svg viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+      </div>
+      <p class="test-quote">"WanderWise made our Goa trip completely effortless. Booked everything in one go — hotel, flight, even the beach tours. Genuinely the best travel experience."</p>
+      <div class="test-author">
+        <div class="test-avatar">A</div>
+        <div>
+          <div class="test-name">Ashmika Jain</div>
+          <div class="test-dest">Goa Sunshine Package</div>
+        </div>
+      </div>
+    </div>
+    <div class="test-card">
+      <div class="test-rating">
+        <svg viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+        <svg viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+        <svg viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+        <svg viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+        <svg viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+      </div>
+      <p class="test-quote">"Jaipur Royal Tour exceeded all expectations. The Rajputana Palace was stunning, Amber Fort was magical. The WanderWise planner made the whole thing seamless."</p>
+      <div class="test-author">
+        <div class="test-avatar">K</div>
+        <div>
+          <div class="test-name">Kavya Srivastava</div>
+          <div class="test-dest">Jaipur Royal Tour</div>
+        </div>
+      </div>
+    </div>
+    <div class="test-card">
+      <div class="test-rating">
+        <svg viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+        <svg viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+        <svg viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+        <svg viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+        <svg viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+      </div>
+      <p class="test-quote">"Pangong Lake at sunrise is something you have to see to believe. The Ladakh Adventure package was perfectly planned — every detail was taken care of."</p>
+      <div class="test-author">
+        <div class="test-avatar">A</div>
+        <div>
+          <div class="test-name">Aakankshya Dash</div>
+          <div class="test-dest">Ladakh Adventure</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <p class="sec-eyebrow reveal">Get Started</p>
+  <h2 class="sec-title reveal">Ready for your<br/>next adventure?</h2>
+  <p class="sec-sub reveal" style="margin:0 auto 40px">Join travellers who plan smarter with WanderWise. Your perfect trip is a few clicks away.</p>
+  <div class="cta-btns">
+    <button class="btn-accent" onclick="window.location='planner.html'">Plan a Trip</button>
+    <a class="btn-ghost-dark" href="#destinations">Browse Destinations</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <span class="footer-brand-name">Wander<span>Wise</span></span>
+      <p>India's smart travel planning platform. Discover, plan, and book your perfect trip — all in one place.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Destinations</h5>
+      <ul>
+        <li><a href="destination.html?id=1">Goa</a></li>
+        <li><a href="destination.html?id=2">Manali</a></li>
+        <li><a href="destination.html?id=3">Jaipur</a></li>
+        <li><a href="destination.html?id=4">Kerala</a></li>
+        <li><a href="destination.html?id=5">Ladakh</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Plan</h5>
+      <ul>
+        <li><a href="planner.html">Trip Planner</a></li>
+        <li><a href="planner.html">Browse Packages</a></li>
+        <li><a href="planner.html">My Bookings</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Project</h5>
+      <ul>
+        <li><a href="#">About</a></li>
+        <li><a href="#">MAHE</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 WanderWise. All rights reserved.</p>
+    <p>Built at Manipal Academy of Higher Education</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+<button id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+  const API = '/api';
+
+  /* ── Destination data ── */
+  const DEST = {
+    'Goa':    { tag:'beach',    img:'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=1200&q=80', fallback:'#0a2030' },
+    'Manali': { tag:'mountain adventure', img:'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=1200&q=80', fallback:'#0d1a2e' },
+    'Jaipur': { tag:'heritage', img:'https://images.unsplash.com/photo-1477587458883-47145ed6736c?auto=format&fit=crop&w=1200&q=80', fallback:'#2e1a00' },
+    'Kerala': { tag:'nature',   img:'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=1200&q=80', fallback:'#0a2e0a' },
+    'Ladakh': { tag:'adventure mountain', img:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1200&q=80', fallback:'#0d021a' },
+  };
+  function getDest(city) { return DEST[city] || { tag:'', img:'', fallback:'#1a1a1a' }; }
+
+  const PKG_IMGS = {
+    'Goa':    'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
+    'Manali': 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80',
+    'Jaipur': 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=800&q=80',
+    'Kerala': 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=800&q=80',
+    'Ladakh': 'https://images.unsplash.com/photo-1571401835393-8c5f35328320?auto=format&fit=crop&w=800&q=80',
+  };
+
+  const FALLBACK_PKG = [
+    { packageId:1, packageName:'Goa Sunshine Package',  destination:{city:'Goa'},   totalCost:15000, durationDays:4, description:'Beach resort, water sports, and nightlife in paradise.', maxPeople:4 },
+    { packageId:2, packageName:'Manali Snow Escape',    destination:{city:'Manali'}, totalCost:12000, durationDays:5, description:'Snow-capped peaks, trekking trails, and cozy mountain stays.', maxPeople:2 },
+    { packageId:3, packageName:'Jaipur Royal Tour',     destination:{city:'Jaipur'}, totalCost:18000, durationDays:3, description:'Heritage forts, palace hotels, and Rajasthani culture.', maxPeople:4 },
+    { packageId:4, packageName:'Kerala Serenity Trip',  destination:{city:'Kerala'}, totalCost:20000, durationDays:6, description:'Houseboat rides, Ayurvedic retreats, and lush backwaters.', maxPeople:2 },
+    { packageId:5, packageName:'Ladakh Adventure',      destination:{city:'Ladakh'}, totalCost:25000, durationDays:7, description:'High-altitude lakes, monasteries, and starlit camping.', maxPeople:3 },
+  ];
+
+  let allDests = [], allPkgs = [], activeFilter = '';
+
+  /* ── Fetch destinations ── */
+  async function loadDests() {
+    try {
+      const r = await fetch(`${API}/destinations`);
+      const data = await r.json();
+      const seen = new Set();
+      allDests = data.filter(d => { if(seen.has(d.city)) return false; seen.add(d.city); return true; });
+      document.getElementById('sDest').textContent = allDests.length;
+    } catch { allDests = []; }
+    renderDests(allDests);
+  }
+
+  function renderDests(list) {
+    const g = document.getElementById('destGrid');
+    if (!list.length) { g.innerHTML = '<p style="color:var(--gray1);padding:40px;grid-column:1/-1">No destinations found. Is the backend running?</p>'; return; }
+    g.innerHTML = list.map((d, i) => {
+      const m = getDest(d.city);
+      const span2 = i === 0 ? 'span2' : '';
+      return `
+        <div class="dest-card ${span2}" onclick="window.location='destination.html?id=${d.destinationId}'" data-tag="${m.tag}">
+          <img src="${m.img}" alt="${d.city}" loading="lazy"
+            onerror="this.style.display='none';this.parentElement.style.background='${m.fallback}'"/>
+          <div class="dest-card-overlay"></div>
+          <div class="dest-card-info">
+            <div class="dest-card-country">${d.country || 'India'}</div>
+            <div class="dest-card-city">${d.city}</div>
+            ${d.bestSeason ? `<div class="dest-card-season">Best time: ${d.bestSeason}</div>` : ''}
+          </div>
+          <div class="dest-card-btn">→</div>
+        </div>`;
+    }).join('');
+    triggerReveal();
+  }
+
+  /* ── Fetch packages ── */
+  async function loadPkgs() {
+    try {
+      const r = await fetch(`${API}/packages`);
+      allPkgs = await r.json();
+      if (!allPkgs.length) allPkgs = FALLBACK_PKG;
+      document.getElementById('sPkg').textContent = allPkgs.length;
+    } catch { allPkgs = FALLBACK_PKG; }
+    renderPkgs(allPkgs);
+  }
+
+  function renderPkgs(list) {
+    const g = document.getElementById('pkgGrid');
+    if (!list.length) { g.innerHTML = '<p style="color:var(--gray1);padding:40px">No packages found.</p>'; return; }
+    g.innerHTML = list.map(p => {
+      const city = p.destination?.city || 'India';
+      const img  = PKG_IMGS[city] || '';
+      return `
+        <div class="pkg-card">
+          <div class="pkg-img-wrap">
+            <img class="pkg-img" src="${img}" alt="${city}"
+              onerror="this.style.background='#e8e8ed';this.style.height='200px'"/>
+          </div>
+          <div class="pkg-body">
+            <div class="pkg-tag">${city}</div>
+            <h3>${p.packageName}</h3>
+            <p>${p.description || 'An amazing travel experience awaits.'}</p>
+            <div class="pkg-meta">
+              <div class="pkg-meta-item"><div class="val">${p.durationDays}</div><div class="lbl">Days</div></div>
+              <div class="pkg-meta-item"><div class="val">${p.maxPeople}</div><div class="lbl">Max people</div></div>
+            </div>
+            <div class="pkg-footer">
+              <div class="pkg-price">₹${Number(p.totalCost).toLocaleString('en-IN')}<br/><sub>per person</sub></div>
+              <button class="btn-dark" onclick="event.stopPropagation();bookPkg(${p.packageId},'${p.packageName}')">Book</button>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+    triggerReveal();
+  }
+
+  /* ── Filters ── */
+  function setFilter(btn, tag) {
+    document.querySelectorAll('#destFilters .pill-filter').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = tag;
+    const list = tag ? allDests.filter(d => getDest(d.city).tag.includes(tag)) : allDests;
+    renderDests(list);
+  }
+
+  function filterPkgs(range, btn) {
+    document.querySelectorAll('#packages .pill-filter').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    let list = allPkgs;
+    if (range==='low')  list = list.filter(p => p.totalCost < 15000);
+    if (range==='mid')  list = list.filter(p => p.totalCost >= 15000 && p.totalCost <= 20000);
+    if (range==='high') list = list.filter(p => p.totalCost > 20000);
+    renderPkgs(list);
+  }
+
+  function bookPkg(id, name) {
+    showToast(`Opening planner for "${name}"`);
+    setTimeout(() => window.location = `planner.html?package=${id}`, 700);
+  }
+
+  /* ── Scroll ── */
+  window.addEventListener('scroll', () => {
+    document.getElementById('scrollTop').classList.toggle('visible', window.scrollY > 600);
+  });
+
+  /* ── Reveal ── */
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((e,i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('in'), i * 70);
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  function triggerReveal() {
+    document.querySelectorAll('.reveal:not(.in)').forEach(el => obs.observe(el));
+  }
+
+  /* ── Toast ── */
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadDests(); loadPkgs(); triggerReveal();
+  });
+</script>
+</body>
+</html>

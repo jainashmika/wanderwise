@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trip Planner ✈️ · WanderWise</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pink:   #E91E8C;
+      --purple: #7B2FBE;
+      --dark:   #0D0D1A;
+      --bg:     #F8F5FF;
+      --white:  #ffffff;
+      --text:   #1a1a2e;
+      --muted:  #6B7280;
+      --border: #F0E6F6;
+      --grad:   linear-gradient(135deg, #E91E8C, #7B2FBE);
+      --shadow: 0 4px 24px rgba(123,47,190,0.10);
+      --radius: 14px;
+    }
+
+    body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ── Navbar ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 60px; height: 70px;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 2px 24px rgba(123,47,190,0.07);
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 800;
+      background: var(--grad);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      text-decoration: none; letter-spacing: -0.5px;
+    }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a {
+      text-decoration: none; color: var(--text); font-weight: 500; font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--pink); }
+
+    /* ── Page Header ── */
+    .page-header {
+      background: var(--dark);
+      padding: 56px 40px 48px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .page-header::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 80% at 50% 50%, rgba(233,30,140,0.15) 0%, transparent 70%);
+    }
+    .page-header h1 {
+      font-family: 'Playfair Display', serif; font-size: 2.6rem; font-weight: 800;
+      color: #fff; margin-bottom: 10px; position: relative; letter-spacing: -0.5px;
+    }
+    .page-header p { color: rgba(255,255,255,0.5); font-size: 0.95rem; position: relative; }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex; justify-content: center; gap: 0;
+      background: #fff; border-bottom: 2px solid var(--border);
+      overflow-x: auto;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab-btn {
+      padding: 18px 32px; border: none; background: transparent;
+      color: var(--muted); font-family: 'Poppins', sans-serif;
+      font-weight: 600; font-size: 0.88rem; cursor: pointer;
+      transition: all 0.2s; white-space: nowrap;
+      position: relative;
+    }
+    .tab-btn::after {
+      content: ''; position: absolute; bottom: -2px; left: 0; right: 0;
+      height: 3px; background: var(--grad);
+      transform: scaleX(0); transition: transform 0.25s;
+    }
+    .tab-btn.active { color: var(--pink); }
+    .tab-btn.active::after { transform: scaleX(1); }
+    .tab-btn:hover { color: var(--pink); }
+
+    /* ── Main container ── */
+    .container { max-width: 860px; margin: 0 auto; padding: 36px 20px 60px; }
+
+    /* ── Tab panels ── */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Progress Bar ── */
+    .progress-wrap { margin-bottom: 36px; }
+    .steps-row {
+      display: flex; justify-content: space-between;
+      align-items: center; position: relative;
+      margin-bottom: 8px;
+    }
+    .steps-row::before {
+      content: ''; position: absolute;
+      top: 50%; left: 0; right: 0; height: 3px;
+      background: #f0d0e8; z-index: 0;
+      transform: translateY(-50%);
+    }
+    .progress-line {
+      position: absolute; top: 50%; left: 0; height: 3px;
+      background: linear-gradient(90deg, var(--pink), var(--purple));
+      z-index: 1; transform: translateY(-50%);
+      transition: width 0.4s ease;
+    }
+    .step-dot {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: white; border: 3px solid #f0d0e8;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; font-weight: 700; color: var(--muted);
+      z-index: 2; position: relative; transition: all 0.3s;
+      cursor: default;
+    }
+    .step-dot.done {
+      background: linear-gradient(135deg, var(--pink), var(--purple));
+      border-color: transparent; color: white;
+    }
+    .step-dot.active {
+      background: white; border-color: var(--pink); color: var(--pink);
+      box-shadow: 0 0 0 4px rgba(255,107,157,0.2);
+    }
+    .steps-labels {
+      display: flex; justify-content: space-between;
+    }
+    .step-label {
+      font-size: 0.72rem; color: var(--muted); text-align: center;
+      width: 36px; font-weight: 500;
+    }
+    .step-label.active { color: var(--pink); font-weight: 600; }
+
+    /* ── Step card ── */
+    .step-card {
+      background: white; border-radius: var(--radius);
+      padding: 36px; box-shadow: var(--shadow);
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+
+    .step-card h2 {
+      font-size: 1.4rem; font-weight: 700; margin-bottom: 6px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .step-card h2 .step-emoji { font-size: 1.6rem; }
+    .step-card .step-hint { color: var(--muted); font-size: 0.88rem; margin-bottom: 28px; }
+
+    /* ── Destination picker ── */
+    .dest-pick-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px;
+    }
+    .dest-pick-card {
+      border: 2px solid #f0d0e8; border-radius: 14px;
+      padding: 18px 12px; text-align: center; cursor: pointer;
+      transition: all 0.2s; background: var(--bg);
+    }
+    .dest-pick-card:hover { border-color: var(--pink); background: #fff0f7; }
+    .dest-pick-card.selected {
+      border-color: var(--purple);
+      background: linear-gradient(135deg, #fff0f7, #f0e0ff);
+      box-shadow: 0 4px 16px rgba(196,75,216,0.15);
+    }
+    .dest-pick-card .dp-emoji { font-size: 2.2rem; margin-bottom: 8px; }
+    .dest-pick-card .dp-city  { font-weight: 700; font-size: 0.9rem; }
+    .dest-pick-card .dp-season { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+
+    /* ── Form fields ── */
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 20px; }
+    .form-row.single { grid-template-columns: 1fr; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+    .form-group input, .form-group select {
+      padding: 12px 16px; border-radius: 12px;
+      border: 2px solid #f0d0e8; background: var(--bg);
+      font-family: 'Poppins', sans-serif; font-size: 0.9rem; color: var(--text);
+      outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--pink); box-shadow: 0 0 0 3px rgba(255,107,157,0.15);
+    }
+
+    /* ── Selection cards (hotel / transport) ── */
+    .select-list { display: flex; flex-direction: column; gap: 14px; }
+    .select-card {
+      border: 2px solid #f0d0e8; border-radius: 14px; padding: 18px 20px;
+      cursor: pointer; transition: all 0.2s; background: var(--bg);
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .select-card:hover { border-color: var(--pink); background: #fff0f7; }
+    .select-card.selected {
+      border-color: var(--purple);
+      background: linear-gradient(135deg, #fff0f7, #f0e0ff);
+    }
+    .select-card .sc-info h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+    .select-card .sc-info p  { font-size: 0.8rem; color: var(--muted); }
+    .select-card .sc-price {
+      font-size: 1.1rem; font-weight: 800; white-space: nowrap;
+      background: linear-gradient(135deg, var(--pink), var(--purple));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .select-card .sc-badge {
+      font-size: 0.72rem; background: #f0d0e8;
+      color: var(--purple); padding: 3px 10px;
+      border-radius: 50px; font-weight: 600; margin-top: 4px;
+      display: inline-block;
+    }
+    .no-options { text-align: center; color: var(--muted); padding: 32px; font-size: 0.9rem; }
+
+    /* ── Review summary ── */
+    .review-box {
+      background: linear-gradient(135deg, #FFF0F7, #F0E0FF);
+      border-radius: 14px; padding: 24px; margin-bottom: 20px;
+    }
+    .review-row {
+      display: flex; justify-content: space-between;
+      padding: 10px 0; border-bottom: 1px solid #f0d0e8;
+      font-size: 0.9rem;
+    }
+    .review-row:last-child { border-bottom: none; }
+    .review-row .label { color: var(--muted); font-weight: 500; }
+    .review-row .value { font-weight: 700; color: var(--text); }
+    .total-row { font-size: 1.1rem; margin-top: 8px; }
+    .total-row .value {
+      background: linear-gradient(135deg, var(--pink), var(--purple));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      font-size: 1.3rem;
+    }
+
+    /* ── Navigation buttons ── */
+    .btn-row { display: flex; gap: 14px; justify-content: flex-end; margin-top: 28px; }
+    .btn-back {
+      padding: 12px 28px; border-radius: 50px;
+      border: 1.5px solid var(--border); background: white;
+      color: var(--muted); font-family: 'Poppins', sans-serif;
+      font-weight: 600; font-size: 0.88rem; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-back:hover { border-color: var(--pink); color: var(--pink); }
+    .btn-next {
+      padding: 12px 32px; border-radius: 50px;
+      background: var(--grad); color: white; border: none;
+      font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 0.9rem;
+      cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 16px rgba(233,30,140,0.3);
+    }
+    .btn-next:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(233,30,140,0.4); }
+    .btn-next:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    /* ── Success screen ── */
+    .success-screen { text-align: center; padding: 40px 20px; }
+    .success-screen .big-emoji { font-size: 5rem; margin-bottom: 16px; animation: bounce 1s ease infinite; }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+    .success-screen h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; }
+    .success-screen p { color: var(--muted); margin-bottom: 28px; }
+    .success-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+    /* ── My Bookings tab ── */
+    .user-row {
+      display: flex; gap: 12px; align-items: flex-end;
+      margin-bottom: 28px; flex-wrap: wrap;
+    }
+    .user-row .form-group { flex: 1; min-width: 160px; }
+    .load-btn {
+      padding: 12px 24px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--pink), var(--purple));
+      color: white; border: none;
+      font-family: 'Poppins', sans-serif; font-weight: 600; cursor: pointer;
+      transition: transform 0.2s; white-space: nowrap;
+    }
+    .load-btn:hover { transform: translateY(-2px); }
+
+    .booking-card {
+      background: white; border-radius: var(--radius);
+      padding: 24px; box-shadow: var(--shadow);
+      margin-bottom: 16px;
+      border-left: 5px solid var(--pink);
+      transition: transform 0.2s;
+    }
+    .booking-card:hover { transform: translateX(4px); }
+    .booking-card.cancelled { border-left-color: #ccc; opacity: 0.7; }
+    .booking-card.confirmed { border-left-color: var(--teal); }
+    .booking-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 12px; flex-wrap: wrap; gap: 8px;
+    }
+    .booking-header h3 { font-size: 1rem; font-weight: 700; }
+    .status-badge {
+      font-size: 0.75rem; font-weight: 700; padding: 4px 14px;
+      border-radius: 50px;
+    }
+    .status-Confirmed { background: #d4f7f0; color: #0a7a6a; }
+    .status-Pending   { background: #fff3d4; color: #a07000; }
+    .status-Cancelled { background: #ffe0e0; color: #c00; }
+    .booking-meta {
+      display: flex; flex-wrap: wrap; gap: 16px;
+      font-size: 0.82rem; color: var(--muted); margin-bottom: 14px;
+    }
+    .booking-meta span { display: flex; align-items: center; gap: 5px; }
+    .booking-amount {
+      font-size: 1.2rem; font-weight: 800;
+      background: linear-gradient(135deg, var(--pink), var(--purple));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .cancel-btn {
+      margin-top: 12px; padding: 8px 20px; border-radius: 50px;
+      border: 2px solid #ffb3b3; background: white; color: #c00;
+      font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 0.82rem;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .cancel-btn:hover { background: #ffebeb; }
+
+    /* ── Packages tab ── */
+    .pkg-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 22px;
+    }
+    .pkg-card {
+      background: white; border-radius: var(--radius);
+      padding: 24px; box-shadow: var(--shadow);
+      border-top: 4px solid transparent;
+      border-image: linear-gradient(90deg, var(--pink), var(--purple)) 1;
+      transition: transform 0.2s;
+    }
+    .pkg-card:hover { transform: translateY(-5px); }
+    .pkg-tag {
+      display: inline-block; background: linear-gradient(135deg,#FFD6EA,#E8D0FF);
+      color: var(--purple); font-size: 0.72rem; font-weight: 600;
+      padding: 3px 12px; border-radius: 50px; margin-bottom: 10px;
+    }
+    .pkg-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+    .pkg-card p  { font-size: 0.8rem; color: var(--muted); margin-bottom: 14px; line-height: 1.6; }
+    .pkg-meta { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+    .pkg-meta span { font-size: 0.78rem; color: var(--text); display: flex; align-items: center; gap: 4px; }
+    .pkg-price {
+      font-size: 1.5rem; font-weight: 800;
+      background: linear-gradient(135deg, var(--pink), var(--purple));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 14px;
+    }
+    .pkg-book-btn {
+      width: 100%; padding: 10px; border-radius: 50px;
+      border: 2px solid var(--pink); background: transparent;
+      color: var(--pink); font-family: 'Poppins', sans-serif;
+      font-weight: 600; font-size: 0.88rem; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .pkg-book-btn:hover {
+      background: linear-gradient(135deg, var(--pink), var(--purple));
+      color: white; border-color: transparent;
+      box-shadow: 0 4px 14px rgba(255,107,157,0.35);
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 28px; right: 28px;
+      background: white; padding: 14px 22px;
+      border-radius: 14px; box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      border-left: 4px solid var(--pink);
+      font-size: 0.9rem; font-weight: 500; color: var(--text);
+      transform: translateX(140%); transition: transform 0.4s;
+      z-index: 999;
+    }
+    .toast.show { transform: translateX(0); }
+
+    /* ── Spinner ── */
+    .spinner {
+      text-align: center; padding: 32px;
+      color: var(--muted); font-size: 0.9rem;
+    }
+    .spinner::before {
+      content: ''; display: block; width: 36px; height: 36px;
+      border: 3px solid #f0d0e8; border-top-color: var(--pink);
+      border-radius: 50%; margin: 0 auto 12px;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media(max-width:600px) {
+      nav { padding: 14px 20px; }
+      .nav-links { display: none; }
+      .form-row { grid-template-columns: 1fr; }
+      .step-card { padding: 24px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav>
+  <a class="nav-logo" href="index.html">WanderWise</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="#" class="active">My Trips</a></li>
+  </ul>
+</nav>
+
+<!-- Page Header -->
+<div class="page-header">
+  <h1>Trip Planner 🗺️</h1>
+  <p>Plan your perfect trip step by step — pick a destination, hotel, transport & book!</p>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('planner', this)">✈️ Plan a Trip</button>
+  <button class="tab-btn"        onclick="switchTab('packages', this)">💼 Browse Packages</button>
+  <button class="tab-btn"        onclick="switchTab('bookings', this)">📋 My Bookings</button>
+</div>
+
+<!-- ════════════════════════════════════
+     TAB 1 — PLANNER (5-step wizard)
+═════════════════════════════════════ -->
+<div class="container">
+<div id="tab-planner" class="tab-panel active">
+
+  <!-- Progress bar -->
+  <div class="progress-wrap">
+    <div class="steps-row">
+      <div class="progress-line" id="progressLine" style="width:0%"></div>
+      <div class="step-dot active" id="dot1">1</div>
+      <div class="step-dot"        id="dot2">2</div>
+      <div class="step-dot"        id="dot3">3</div>
+      <div class="step-dot"        id="dot4">4</div>
+      <div class="step-dot"        id="dot5">✓</div>
+    </div>
+    <div class="steps-labels">
+      <span class="step-label active" id="lbl1">Where</span>
+      <span class="step-label"        id="lbl2">When</span>
+      <span class="step-label"        id="lbl3">Hotel</span>
+      <span class="step-label"        id="lbl4">Travel</span>
+      <span class="step-label"        id="lbl5">Book</span>
+    </div>
+  </div>
+
+  <!-- Step 1: Destination -->
+  <div id="step1" class="step-card">
+    <h2><span class="step-emoji">🌍</span> Choose Your Destination</h2>
+    <p class="step-hint">Where do you want to go?</p>
+    <div class="dest-pick-grid" id="destPickGrid">
+      <div class="spinner"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-next" id="nextBtn1" onclick="goStep(2)" disabled>Next →</button>
+    </div>
+  </div>
+
+  <!-- Step 2: Dates & People -->
+  <div id="step2" class="step-card" style="display:none">
+    <h2><span class="step-emoji">📅</span> Pick Your Dates</h2>
+    <p class="step-hint">When are you travelling and with how many people?</p>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Check-in Date</label>
+        <input type="date" id="checkIn" onchange="validateDates()"/>
+      </div>
+      <div class="form-group">
+        <label>Check-out Date</label>
+        <input type="date" id="checkOut" onchange="validateDates()"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Number of Guests</label>
+        <select id="numPeople">
+          <option value="1">1 Person</option>
+          <option value="2">2 People</option>
+          <option value="3">3 People</option>
+          <option value="4">4 People</option>
+          <option value="5">5+ People</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>User ID (your account)</label>
+        <select id="userId">
+          <option value="1">1 — Ashmika Jain</option>
+          <option value="2">2 — Aakankshya Dash</option>
+          <option value="3">3 — Kavya Srivastava</option>
+        </select>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-back" onclick="goStep(1)">← Back</button>
+      <button class="btn-next" id="nextBtn2" onclick="goStep(3)" disabled>Next →</button>
+    </div>
+  </div>
+
+  <!-- Step 3: Hotel -->
+  <div id="step3" class="step-card" style="display:none">
+    <h2><span class="step-emoji">🏨</span> Pick a Hotel</h2>
+    <p class="step-hint">Available hotels at your destination</p>
+    <div class="select-list" id="hotelList"><div class="spinner"></div></div>
+    <div class="btn-row">
+      <button class="btn-back" onclick="goStep(2)">← Back</button>
+      <button class="btn-next" id="nextBtn3" onclick="goStep(4)" disabled>Next →</button>
+    </div>
+  </div>
+
+  <!-- Step 4: Transport -->
+  <div id="step4" class="step-card" style="display:none">
+    <h2><span class="step-emoji">🚌</span> Pick Transport</h2>
+    <p class="step-hint">How will you get there? (optional — skip if not needed)</p>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Travelling From</label>
+        <input type="text" id="fromCity" placeholder="e.g. Delhi, Mumbai..."/>
+      </div>
+      <div class="form-group" style="align-self:flex-end">
+        <button class="btn-next" style="width:100%;padding:12px" onclick="searchTransport()">Search 🔍</button>
+      </div>
+    </div>
+    <div class="select-list" id="transportList">
+      <div class="no-options">Enter your city above and click Search 🔍</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-back" onclick="goStep(3)">← Back</button>
+      <button class="btn-next" onclick="goStep(5)">Next →</button>
+    </div>
+  </div>
+
+  <!-- Step 5: Review & Book -->
+  <div id="step5" class="step-card" style="display:none">
+    <h2><span class="step-emoji">✅</span> Review & Confirm</h2>
+    <p class="step-hint">Everything look good? Let's book it!</p>
+
+    <div class="review-box" id="reviewBox"></div>
+
+    <div class="btn-row">
+      <button class="btn-back" onclick="goStep(4)">← Back</button>
+      <button class="btn-next" onclick="confirmBooking()">Confirm Booking 🎉</button>
+    </div>
+  </div>
+
+  <!-- Success -->
+  <div id="stepSuccess" class="step-card" style="display:none">
+    <div class="success-screen">
+      <div class="big-emoji">🎉</div>
+      <h2>Booking Confirmed!</h2>
+      <p>Your trip is booked. Pack your bags and get ready for an adventure!</p>
+      <div class="success-btns">
+        <button class="btn-next" onclick="resetPlanner()">Plan Another Trip ✈️</button>
+        <button class="btn-back" onclick="switchTabById('bookings')">View My Bookings 📋</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ════════════════════════════════════
+     TAB 2 — PACKAGES
+═════════════════════════════════════ -->
+<div id="tab-packages" class="tab-panel">
+  <div class="pkg-grid" id="pkgGrid"><div class="spinner"></div></div>
+</div>
+
+<!-- ════════════════════════════════════
+     TAB 3 — MY BOOKINGS
+═════════════════════════════════════ -->
+<div id="tab-bookings" class="tab-panel">
+  <div style="background:white;border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);margin-bottom:24px;">
+    <h3 style="margin-bottom:16px;font-size:1rem;">Load your bookings</h3>
+    <div class="user-row">
+      <div class="form-group">
+        <label>Select User</label>
+        <select id="bookingUserId">
+          <option value="1">1 — Ashmika Jain</option>
+          <option value="2">2 — Aakankshya Dash</option>
+          <option value="3">3 — Kavya Srivastava</option>
+        </select>
+      </div>
+      <button class="load-btn" onclick="loadBookings()">Load Bookings 📋</button>
+    </div>
+  </div>
+  <div id="bookingsList"><div class="no-options" style="text-align:center;color:var(--muted);padding:40px;">Select a user and click Load Bookings</div></div>
+</div>
+
+</div><!-- /container -->
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  const API = '/api';
+
+  /* ── Destination emoji map ── */
+  const destMeta = {
+    'Goa':    { emoji:'🏖️', grad:'#43CBFF,#9708CC' },
+    'Manali': { emoji:'🏔️', grad:'#a8edea,#fed6e3' },
+    'Jaipur': { emoji:'🏰', grad:'#f7971e,#ffd200' },
+    'Kerala': { emoji:'🌿', grad:'#56ab2f,#a8e063' },
+    'Ladakh': { emoji:'🌌', grad:'#4776e6,#8e54e9' },
+  };
+  function getMeta(city) { return destMeta[city] || { emoji:'🌍', grad:'#FF6B9D,#C44BD8' }; }
+
+  /* ── State ── */
+  let state = {
+    currentStep: 1,
+    destination: null,   // { destinationId, city }
+    hotel: null,         // { hotelId, hotelName, pricePerNight }
+    transport: null,     // { transportId, type, fare } | null
+    checkIn: null, checkOut: null,
+    numPeople: 1, userId: 1,
+    allDestinations: [], allPackages: []
+  };
+
+  /* ══════════ TABS ══════════ */
+  function switchTab(name, btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + name).classList.add('active');
+    if (name === 'packages' && !state.allPackages.length) loadPackages();
+  }
+  function switchTabById(name) {
+    const btns = document.querySelectorAll('.tab-btn');
+    const panels = ['planner','packages','bookings'];
+    const idx = panels.indexOf(name);
+    if (idx >= 0) switchTab(name, btns[idx]);
+  }
+
+  /* ══════════ STEP NAVIGATION ══════════ */
+  const progressPct = [0, 0, 25, 50, 75, 100];
+
+  function goStep(n) {
+    if (n === 3) loadHotels();
+    if (n === 5) buildReview();
+
+    document.querySelectorAll('.step-card,[id^=stepSuccess]').forEach(el => el.style.display = 'none');
+    const el = document.getElementById('step' + n);
+    if (el) { el.style.display = 'block'; el.style.removeProperty('display'); el.style.display=''; }
+    // Actually show the right one
+    document.getElementById('step'+n).style.display = 'block';
+
+    state.currentStep = n;
+    updateProgress(n);
+  }
+
+  function showSuccess() {
+    document.querySelectorAll('[id^=step]').forEach(el => el.style.display = 'none');
+    document.getElementById('stepSuccess').style.display = 'block';
+    updateProgress(6);
+  }
+
+  function updateProgress(n) {
+    for (let i = 1; i <= 5; i++) {
+      const dot = document.getElementById('dot'+i);
+      const lbl = document.getElementById('lbl'+i);
+      dot.className = 'step-dot';
+      lbl.className = 'step-label';
+      if (i < n)       { dot.classList.add('done'); dot.textContent = '✓'; }
+      else if (i === n) { dot.classList.add('active'); dot.textContent = i === 5 ? '✓' : i; lbl.classList.add('active'); }
+      else              { dot.textContent = i; }
+    }
+    document.getElementById('progressLine').style.width = progressPct[Math.min(n,5)] + '%';
+  }
+
+  /* ══════════ STEP 1 — Destinations ══════════ */
+  async function loadDestinations() {
+    try {
+      const res = await fetch(`${API}/destinations`);
+      state.allDestinations = await res.json();
+      renderDestPicker();
+    } catch {
+      document.getElementById('destPickGrid').innerHTML = '<p class="no-options">Cannot load destinations. Is the backend running?</p>';
+    }
+  }
+
+  function renderDestPicker() {
+    const grid = document.getElementById('destPickGrid');
+    grid.innerHTML = state.allDestinations.map(d => {
+      const m = getMeta(d.city);
+      return `
+        <div class="dest-pick-card" id="dpcard-${d.destinationId}" onclick="selectDest(${d.destinationId},'${d.city}')">
+          <div class="dp-emoji">${m.emoji}</div>
+          <div class="dp-city">${d.city}</div>
+          ${d.bestSeason ? `<div class="dp-season">🗓 ${d.bestSeason}</div>` : ''}
+        </div>`;
+    }).join('');
+  }
+
+  function selectDest(id, city) {
+    document.querySelectorAll('.dest-pick-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('dpcard-'+id).classList.add('selected');
+    state.destination = { destinationId: id, city };
+    document.getElementById('nextBtn1').disabled = false;
+  }
+
+  /* ══════════ STEP 2 — Dates ══════════ */
+  function validateDates() {
+    const ci = document.getElementById('checkIn').value;
+    const co = document.getElementById('checkOut').value;
+    const btn = document.getElementById('nextBtn2');
+    if (ci && co && co > ci) {
+      state.checkIn = ci; state.checkOut = co;
+      btn.disabled = false;
+    } else {
+      btn.disabled = true;
+    }
+  }
+
+  /* ══════════ STEP 3 — Hotels ══════════ */
+  async function loadHotels() {
+    const list = document.getElementById('hotelList');
+    list.innerHTML = '<div class="spinner"></div>';
+    state.hotel = null;
+    document.getElementById('nextBtn3').disabled = true;
+    try {
+      const res = await fetch(`${API}/hotels/search?city=${encodeURIComponent(state.destination.city)}`);
+      const hotels = await res.json();
+      if (!hotels.length) { list.innerHTML = '<p class="no-options">No hotels found for this destination.</p>'; return; }
+      list.innerHTML = hotels.map(h => `
+        <div class="select-card" id="hcard-${h.hotelId}" onclick="selectHotel(${h.hotelId},'${h.hotelName}',${h.pricePerNight})">
+          <div class="sc-info">
+            <h4>🏨 ${h.hotelName}</h4>
+            <p>${h.address || ''}</p>
+            <span class="sc-badge">⭐ ${h.rating} &nbsp;|&nbsp; ${h.availableRooms} rooms left</span>
+            ${h.amenities ? `<p style="margin-top:4px;font-size:0.75rem;color:#aaa">${h.amenities}</p>` : ''}
+          </div>
+          <div class="sc-price">₹${Number(h.pricePerNight).toLocaleString('en-IN')}<br/><small style="font-size:0.7rem;font-weight:400">/ night</small></div>
+        </div>`).join('');
+    } catch {
+      list.innerHTML = '<p class="no-options">Could not load hotels.</p>';
+    }
+  }
+
+  function selectHotel(id, name, price) {
+    document.querySelectorAll('#hotelList .select-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('hcard-'+id).classList.add('selected');
+    state.hotel = { hotelId: id, hotelName: name, pricePerNight: price };
+    document.getElementById('nextBtn3').disabled = false;
+  }
+
+  /* ══════════ STEP 4 — Transport ══════════ */
+  async function searchTransport() {
+    const from = document.getElementById('fromCity').value.trim();
+    if (!from) { showToast('Please enter your departure city'); return; }
+    const list = document.getElementById('transportList');
+    list.innerHTML = '<div class="spinner"></div>';
+    state.transport = null;
+    try {
+      const res = await fetch(`${API}/transport/search?source=${encodeURIComponent(from)}&destination=${encodeURIComponent(state.destination.city)}`);
+      const items = await res.json();
+      if (!items.length) {
+        list.innerHTML = `<p class="no-options">No transport found from "${from}" to "${state.destination.city}". You can still proceed without transport.</p>`;
+        return;
+      }
+      list.innerHTML = items.map(t => {
+        const icon = t.type === 'Flight' ? '✈️' : t.type === 'Train' ? '🚂' : '🚌';
+        return `
+          <div class="select-card" id="tcard-${t.transportId}" onclick="selectTransport(${t.transportId},'${t.type}',${t.fare})">
+            <div class="sc-info">
+              <h4>${icon} ${t.type} — ${t.operatorName || ''}</h4>
+              <p>${t.source} → ${t.destination}</p>
+              <span class="sc-badge">🕐 ${t.departureTime || ''} – ${t.arrivalTime || ''} &nbsp;|&nbsp; ${t.availableSeats} seats</span>
+            </div>
+            <div class="sc-price">₹${Number(t.fare).toLocaleString('en-IN')}</div>
+          </div>`;
+      }).join('');
+    } catch {
+      list.innerHTML = '<p class="no-options">Could not load transport options.</p>';
+    }
+  }
+
+  function selectTransport(id, type, fare) {
+    document.querySelectorAll('#transportList .select-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('tcard-'+id).classList.add('selected');
+    state.transport = { transportId: id, type, fare };
+  }
+
+  /* ══════════ STEP 5 — Review ══════════ */
+  function buildReview() {
+    state.numPeople = parseInt(document.getElementById('numPeople').value);
+    state.userId    = parseInt(document.getElementById('userId').value);
+
+    const nights = state.checkIn && state.checkOut
+      ? Math.ceil((new Date(state.checkOut) - new Date(state.checkIn)) / 86400000)
+      : 0;
+    const hotelTotal = state.hotel ? state.hotel.pricePerNight * nights * state.numPeople : 0;
+    const transportTotal = state.transport ? state.transport.fare * state.numPeople : 0;
+    const grandTotal = hotelTotal + transportTotal;
+
+    const userNames = { 1:'Ashmika Jain', 2:'Aakankshya Dash', 3:'Kavya Srivastava' };
+
+    document.getElementById('reviewBox').innerHTML = `
+      <div class="review-row"><span class="label">Traveller</span><span class="value">${userNames[state.userId]}</span></div>
+      <div class="review-row"><span class="label">Destination</span><span class="value">📍 ${state.destination?.city}</span></div>
+      <div class="review-row"><span class="label">Check-in</span><span class="value">${fmt(state.checkIn)}</span></div>
+      <div class="review-row"><span class="label">Check-out</span><span class="value">${fmt(state.checkOut)} (${nights} nights)</span></div>
+      <div class="review-row"><span class="label">Guests</span><span class="value">${state.numPeople} person${state.numPeople>1?'s':''}</span></div>
+      <div class="review-row"><span class="label">Hotel</span><span class="value">🏨 ${state.hotel?.hotelName} — ₹${Number(state.hotel?.pricePerNight).toLocaleString('en-IN')}/night</span></div>
+      ${state.transport ? `<div class="review-row"><span class="label">Transport</span><span class="value">${state.transport.type} — ₹${Number(state.transport.fare).toLocaleString('en-IN')}/person</span></div>` : '<div class="review-row"><span class="label">Transport</span><span class="value" style="color:var(--muted)">None selected</span></div>'}
+      <div class="review-row total-row"><span class="label" style="font-weight:700">Total Amount</span><span class="value">₹${Number(grandTotal).toLocaleString('en-IN')}</span></div>`;
+
+    window._grandTotal = grandTotal;
+  }
+
+  function fmt(d) {
+    if (!d) return '—';
+    return new Date(d).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+  }
+
+  /* ══════════ BOOKING ══════════ */
+  async function confirmBooking() {
+    const body = {
+      userId:      state.userId,
+      hotelId:     state.hotel?.hotelId,
+      transportId: state.transport?.transportId || null,
+      packageId:   null,
+      checkIn:     state.checkIn,
+      checkOut:    state.checkOut,
+      numPeople:   state.numPeople
+    };
+    try {
+      const res = await fetch(`${API}/bookings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showSuccess();
+      } else {
+        showToast('Booking failed: ' + (data.message || 'Unknown error'));
+      }
+    } catch (e) {
+      showToast('Could not connect to server. Is the backend running?');
+    }
+  }
+
+  function resetPlanner() {
+    state = { currentStep:1, destination:null, hotel:null, transport:null,
+              checkIn:null, checkOut:null, numPeople:1, userId:1,
+              allDestinations: state.allDestinations, allPackages: state.allPackages };
+    document.querySelectorAll('[id^=step]').forEach(el => el.style.display='none');
+    document.getElementById('step1').style.display='block';
+    document.querySelectorAll('.dest-pick-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('nextBtn1').disabled = true;
+    document.getElementById('checkIn').value = '';
+    document.getElementById('checkOut').value = '';
+    updateProgress(1);
+  }
+
+  /* ══════════ TAB 2 — PACKAGES ══════════ */
+  const FALLBACK_PACKAGES = [
+    { packageId:1, packageName:'Goa Sunshine Package',  destination:{city:'Goa'},    totalCost:15000, durationDays:4, description:'Beach + Resort + Flight Deal', maxPeople:4 },
+    { packageId:2, packageName:'Manali Snow Escape',    destination:{city:'Manali'},  totalCost:12000, durationDays:5, description:'Snow, trek and cozy stay',     maxPeople:2 },
+    { packageId:3, packageName:'Jaipur Royal Tour',     destination:{city:'Jaipur'},  totalCost:18000, durationDays:3, description:'Heritage + Palace hotel',      maxPeople:4 },
+    { packageId:4, packageName:'Kerala Serenity Trip',  destination:{city:'Kerala'},  totalCost:20000, durationDays:6, description:'Backwaters + Ayurveda',        maxPeople:2 },
+    { packageId:5, packageName:'Ladakh Adventure',      destination:{city:'Ladakh'},  totalCost:25000, durationDays:7, description:'Trekking + Camping + Lakes',   maxPeople:3 },
+  ];
+
+  async function loadPackages() {
+    try {
+      const res = await fetch(`${API}/packages`);
+      state.allPackages = await res.json();
+      if (!state.allPackages.length) state.allPackages = FALLBACK_PACKAGES;
+      const grid = document.getElementById('pkgGrid');
+      grid.innerHTML = state.allPackages.map(p => {
+        const city = p.destination?.city || 'India';
+        const m = getMeta(city);
+        return `
+          <div class="pkg-card">
+            <span class="pkg-tag">${m.emoji} ${city}</span>
+            <h3>${p.packageName}</h3>
+            <p>${p.description || 'A wonderful travel package.'}</p>
+            <div class="pkg-meta">
+              <span>📅 ${p.durationDays} Days</span>
+              <span>👥 Up to ${p.maxPeople}</span>
+            </div>
+            <div class="pkg-price">₹${Number(p.totalCost).toLocaleString('en-IN')}</div>
+            <button class="pkg-book-btn" onclick="quickBookPackage(${p.packageId},'${p.packageName}','${city}')">Book Package 🎉</button>
+          </div>`;
+      }).join('');
+    } catch {
+      state.allPackages = FALLBACK_PACKAGES;
+      const grid = document.getElementById('pkgGrid');
+      grid.innerHTML = state.allPackages.map(p => {
+        const city = p.destination?.city || 'India';
+        const m = getMeta(city);
+        return `
+          <div class="pkg-card">
+            <span class="pkg-tag">${m.emoji} ${city}</span>
+            <h3>${p.packageName}</h3>
+            <p>${p.description || 'A wonderful travel package.'}</p>
+            <div class="pkg-meta">
+              <span>📅 ${p.durationDays} Days</span>
+              <span>👥 Up to ${p.maxPeople}</span>
+            </div>
+            <div class="pkg-price">₹${Number(p.totalCost).toLocaleString('en-IN')}</div>
+            <button class="pkg-book-btn" onclick="quickBookPackage(${p.packageId},'${p.packageName}','${city}')">Book Package 🎉</button>
+          </div>`;
+      }).join('');
+    }
+  }
+
+  function quickBookPackage(id, name, city) {
+    showToast(`Starting planner for "${name}" 🌟`);
+    // Switch to planner tab and pre-select the destination
+    switchTabById('planner');
+    const dest = state.allDestinations.find(d => d.city === city);
+    if (dest) {
+      setTimeout(() => {
+        selectDest(dest.destinationId, dest.city);
+        showToast('Destination pre-selected! Fill in your dates and continue.');
+      }, 400);
+    }
+  }
+
+  /* ══════════ TAB 3 — MY BOOKINGS ══════════ */
+  async function loadBookings() {
+    const uid = document.getElementById('bookingUserId').value;
+    const list = document.getElementById('bookingsList');
+    list.innerHTML = '<div class="spinner"></div>';
+    try {
+      const res = await fetch(`${API}/bookings/user/${uid}`);
+      const bookings = await res.json();
+      if (!bookings.length) {
+        list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:40px;">No bookings found for this user.</div>';
+        return;
+      }
+      list.innerHTML = bookings.map(b => {
+        const nights = b.checkInDate && b.checkOutDate
+          ? Math.ceil((new Date(b.checkOutDate) - new Date(b.checkInDate)) / 86400000) : '?';
+        return `
+          <div class="booking-card ${b.status?.toLowerCase()}">
+            <div class="booking-header">
+              <h3>📋 Booking #${b.bookingId}</h3>
+              <span class="status-badge status-${b.status}">${b.status}</span>
+            </div>
+            <div class="booking-meta">
+              <span>📅 ${fmt(b.checkInDate)} → ${fmt(b.checkOutDate)}</span>
+              <span>🌙 ${nights} night${nights!==1?'s':''}</span>
+              <span>👥 ${b.numPeople} guest${b.numPeople>1?'s':''}</span>
+              <span>📆 Booked: ${fmt(b.bookingDate?.split('T')[0])}</span>
+            </div>
+            <div class="booking-amount">₹${Number(b.totalAmount).toLocaleString('en-IN')}</div>
+            ${b.status !== 'Cancelled'
+              ? `<button class="cancel-btn" onclick="cancelBooking(${b.bookingId})">Cancel Booking ✕</button>`
+              : ''}
+          </div>`;
+      }).join('');
+    } catch {
+      list.innerHTML = '<p style="text-align:center;color:var(--muted);padding:40px;">Could not load bookings. Is the backend running?</p>';
+    }
+  }
+
+  async function cancelBooking(id) {
+    if (!confirm('Are you sure you want to cancel this booking?')) return;
+    try {
+      await fetch(`${API}/bookings/${id}/cancel`, { method: 'PUT' });
+      showToast('Booking cancelled 😔');
+      loadBookings();
+    } catch {
+      showToast('Could not cancel booking.');
+    }
+  }
+
+  /* ══════════ TOAST ══════════ */
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  /* ══════════ INIT ══════════ */
+  document.addEventListener('DOMContentLoaded', () => {
+    // Set min date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('checkIn').min  = today;
+    document.getElementById('checkOut').min = today;
+
+    loadDestinations();
+
+    // Pre-select package if coming from index.html
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('package')) {
+      loadPackages();
+      switchTabById('packages');
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Destination · WanderWise</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pink:    #0CD4DE;
+      --purple:  #0096C7;
+      --teal:    #0ECDD6;
+      --peach:   #F59E0B;
+      --dark:    #0A0A0F;
+      --bg:      #F0FAFA;
+      --white:   #FFFFFF;
+      --text:    #0A2540;
+      --muted:   #4B6B7A;
+      --border:  rgba(0,150,199,0.12);
+      --grad:    linear-gradient(135deg,#0CD4DE,#0096C7);
+      --grad2:   linear-gradient(135deg,#0ECDD6,#0284C7);
+      --shadow:  0 4px 24px rgba(12,212,222,0.10);
+      --shadowL: 0 20px 60px rgba(0,150,199,0.18);
+      --radius:  16px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden; }
+
+    /* ── NAV ── */
+    nav {
+      position:fixed; top:0; left:0; right:0; z-index:300;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 56px; height:68px;
+      background:rgba(255,255,255,0.88);
+      backdrop-filter:blur(24px) saturate(1.5);
+      border-bottom:1px solid var(--border);
+      transition:background 0.3s;
+    }
+    .nav-logo {
+      font-size:1.25rem; font-weight:800; letter-spacing:-0.5px;
+      background:var(--grad); -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent; background-clip:text;
+      text-decoration:none;
+    }
+    .nav-links { display:flex; gap:32px; list-style:none; }
+    .nav-links a {
+      text-decoration:none; color:var(--text); font-weight:500;
+      font-size:0.875rem; opacity:0.7; transition:opacity 0.2s;
+    }
+    .nav-links a:hover { opacity:1; }
+    .nav-cta {
+      padding:9px 24px; border-radius:50px;
+      background:var(--grad); color:#fff; border:none;
+      font-family:'Inter',sans-serif; font-size:0.875rem; font-weight:600;
+      cursor:pointer; text-decoration:none; transition:opacity 0.2s, transform 0.2s;
+    }
+    .nav-cta:hover { opacity:0.9; transform:translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      position:relative; height:100vh; min-height:600px;
+      display:flex; align-items:flex-end;
+      overflow:hidden;
+    }
+    .hero-img {
+      position:absolute; inset:0; width:100%; height:100%;
+      object-fit:cover; object-position:center;
+    }
+    .hero-overlay {
+      position:absolute; inset:0;
+      background:linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.1) 100%);
+    }
+    /* floating blob decorations */
+    .hero-blob {
+      position:absolute; border-radius:50%; filter:blur(80px); opacity:0.25; pointer-events:none;
+    }
+    .hero-blob.b1 { width:500px; height:500px; background:#FF2D78; top:-100px; right:-100px; }
+    .hero-blob.b2 { width:400px; height:400px; background:#7C3AED; bottom:100px; left:-80px; }
+    .hero-content {
+      position:relative; z-index:2;
+      width:100%; padding:0 56px 72px;
+    }
+    .hero-badge {
+      display:inline-flex; align-items:center; gap:8px;
+      background:rgba(255,255,255,0.15); backdrop-filter:blur(12px);
+      border:1px solid rgba(255,255,255,0.25);
+      color:#fff; font-size:0.8rem; font-weight:600; letter-spacing:0.05em;
+      padding:6px 16px; border-radius:50px; text-transform:uppercase;
+      margin-bottom:20px;
+    }
+    .hero-badge span { width:7px; height:7px; border-radius:50%; background:#4ADE80; display:block; }
+    .hero-title {
+      font-family:'Playfair Display',serif; font-size:clamp(3rem,8vw,6rem);
+      color:#fff; line-height:1; font-weight:700; margin-bottom:16px;
+    }
+    .hero-sub { color:rgba(255,255,255,0.75); font-size:1.1rem; font-weight:400; max-width:500px; margin-bottom:32px; }
+    .hero-stats {
+      display:flex; gap:48px;
+    }
+    .hero-stat { color:#fff; }
+    .hero-stat .val { font-size:1.8rem; font-weight:800; display:block; }
+    .hero-stat .lbl { font-size:0.8rem; opacity:0.65; font-weight:500; text-transform:uppercase; letter-spacing:0.05em; }
+
+    /* scroll indicator */
+    .scroll-hint {
+      position:absolute; bottom:32px; right:56px; z-index:2;
+      display:flex; flex-direction:column; align-items:center; gap:8px;
+      color:rgba(255,255,255,0.55); font-size:0.72rem; font-weight:500; letter-spacing:0.08em; text-transform:uppercase;
+    }
+    .scroll-hint .line {
+      width:1px; height:48px;
+      background:linear-gradient(to bottom, transparent, rgba(255,255,255,0.55));
+      animation: scrollLine 2s ease-in-out infinite;
+    }
+    @keyframes scrollLine { 0%,100%{opacity:0.3} 50%{opacity:1} }
+
+    /* ── TABS ── */
+    .tab-bar-wrap {
+      position:sticky; top:68px; z-index:200;
+      background:rgba(255,255,255,0.92); backdrop-filter:blur(20px);
+      border-bottom:1px solid var(--border);
+    }
+    .tab-bar {
+      display:flex; gap:0; max-width:1100px; margin:0 auto; padding:0 56px;
+    }
+    .tab-btn {
+      padding:18px 28px; background:none; border:none; cursor:pointer;
+      font-family:'Inter',sans-serif; font-size:0.9rem; font-weight:500;
+      color:var(--muted); position:relative; transition:color 0.2s; white-space:nowrap;
+    }
+    .tab-btn::after {
+      content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
+      background:var(--grad); border-radius:2px 2px 0 0;
+      transform:scaleX(0); transition:transform 0.25s;
+    }
+    .tab-btn.active { color:var(--text); font-weight:600; }
+    .tab-btn.active::after { transform:scaleX(1); }
+
+    /* ── MAIN CONTENT ── */
+    .main-wrap { max-width:1100px; margin:0 auto; padding:64px 56px; }
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; }
+
+    /* ── SECTION HEADER ── */
+    .sec-header { margin-bottom:40px; }
+    .sec-tag {
+      display:inline-block; font-size:0.72rem; font-weight:700;
+      text-transform:uppercase; letter-spacing:0.1em;
+      padding:4px 12px; border-radius:50px;
+      background:linear-gradient(135deg,rgba(255,45,120,0.1),rgba(124,58,237,0.1));
+      color:var(--pink); margin-bottom:12px;
+    }
+    .sec-title { font-size:2rem; font-weight:800; letter-spacing:-0.03em; }
+    .sec-sub { color:var(--muted); font-size:0.95rem; margin-top:8px; }
+
+    /* ── OVERVIEW GRID ── */
+    .overview-grid { display:grid; grid-template-columns:1fr 340px; gap:48px; }
+    .overview-text p { color:var(--muted); line-height:1.8; margin-bottom:16px; font-size:0.95rem; }
+    .highlights-list { margin-top:32px; display:flex; flex-direction:column; gap:12px; }
+    .highlight-item {
+      display:flex; align-items:flex-start; gap:12px;
+    }
+    .hi-dot {
+      width:28px; height:28px; border-radius:50%; flex-shrink:0; margin-top:2px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:0.8rem;
+    }
+    .hi-dot.pink  { background:rgba(255,45,120,0.12); color:var(--pink); }
+    .hi-dot.purple{ background:rgba(124,58,237,0.12); color:var(--purple); }
+    .hi-dot.teal  { background:rgba(6,182,212,0.12);  color:var(--teal); }
+    .hi-dot.peach { background:rgba(245,158,11,0.12); color:var(--peach); }
+    .hi-text strong { display:block; font-weight:600; font-size:0.9rem; }
+    .hi-text span   { font-size:0.82rem; color:var(--muted); }
+
+    /* sidebar card */
+    .overview-sidebar { display:flex; flex-direction:column; gap:20px; }
+    .info-card {
+      background:#fff; border-radius:var(--radius); padding:28px;
+      border:1px solid var(--border); box-shadow:var(--shadow);
+    }
+    .info-card h4 { font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); margin-bottom:16px; }
+    .info-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border); }
+    .info-row:last-child { border:none; }
+    .info-row .key { font-size:0.85rem; color:var(--muted); }
+    .info-row .val { font-size:0.9rem; font-weight:600; }
+    .weather-icon { font-size:2rem; margin-bottom:8px; }
+    .weather-temp { font-size:2.5rem; font-weight:800; letter-spacing:-1px; }
+    .weather-desc { font-size:0.85rem; color:var(--muted); margin-top:4px; }
+
+    /* ── PHOTO GRID for overview ── */
+    .photo-grid {
+      display:grid; grid-template-columns:1fr 1fr; grid-template-rows:200px 200px; gap:12px; margin-top:32px;
+      border-radius:var(--radius); overflow:hidden;
+    }
+    .photo-grid img {
+      width:100%; height:100%; object-fit:cover;
+      transition:transform 0.4s ease;
+    }
+    .photo-grid img:hover { transform:scale(1.04); }
+    .photo-grid .big { grid-row:span 2; }
+
+    /* ── SPOTS GRID ── */
+    .spots-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:28px; }
+    .spot-card {
+      background:#fff; border-radius:var(--radius); overflow:hidden;
+      border:1px solid var(--border); box-shadow:var(--shadow);
+      transition:transform 0.3s, box-shadow 0.3s;
+    }
+    .spot-card:hover { transform:translateY(-6px); box-shadow:var(--shadowL); }
+    .spot-img { position:relative; height:180px; overflow:hidden; }
+    .spot-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.4s; }
+    .spot-card:hover .spot-img img { transform:scale(1.07); }
+    .spot-badge {
+      position:absolute; top:12px; left:12px;
+      font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em;
+      padding:4px 10px; border-radius:50px; color:#fff;
+    }
+    .badge-nature  { background:linear-gradient(135deg,#10B981,#059669); }
+    .badge-history { background:linear-gradient(135deg,#F59E0B,#D97706); }
+    .badge-culture { background:linear-gradient(135deg,#EC4899,#BE185D); }
+    .badge-beach   { background:linear-gradient(135deg,#06B6D4,#0284C7); }
+    .badge-default { background:linear-gradient(135deg,#7C3AED,#5B21B6); }
+    .spot-body { padding:20px; }
+    .spot-body h3 { font-size:1rem; font-weight:700; margin-bottom:6px; }
+    .spot-body p { font-size:0.82rem; color:var(--muted); line-height:1.6; }
+    .spot-rating {
+      display:inline-flex; align-items:center; gap:4px; margin-top:12px;
+      font-size:0.8rem; font-weight:600; color:var(--peach);
+    }
+
+    /* ── HOTELS GRID ── */
+    .hotels-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:28px; }
+    .hotel-card {
+      background:#fff; border-radius:var(--radius); overflow:hidden;
+      border:1px solid var(--border); box-shadow:var(--shadow);
+      display:flex; flex-direction:column;
+      transition:transform 0.3s, box-shadow 0.3s;
+    }
+    .hotel-card:hover { transform:translateY(-5px); box-shadow:var(--shadowL); }
+    .hotel-img { height:220px; overflow:hidden; position:relative; }
+    .hotel-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.4s; }
+    .hotel-card:hover .hotel-img img { transform:scale(1.06); }
+    .hotel-stars {
+      position:absolute; top:14px; right:14px;
+      background:rgba(0,0,0,0.55); backdrop-filter:blur(8px);
+      color:#F59E0B; font-size:0.78rem; font-weight:700;
+      padding:5px 10px; border-radius:50px; border:1px solid rgba(255,255,255,0.15);
+    }
+    .hotel-body { padding:24px; flex:1; display:flex; flex-direction:column; gap:8px; }
+    .hotel-name { font-size:1.05rem; font-weight:700; }
+    .hotel-loc { font-size:0.82rem; color:var(--muted); }
+    .hotel-price {
+      font-size:1.3rem; font-weight:800; letter-spacing:-0.5px; margin-top:auto; padding-top:12px;
+      background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .hotel-price span { font-size:0.8rem; font-weight:400; color:var(--muted); -webkit-text-fill-color:var(--muted); }
+    .hotel-amenities { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+    .amenity-pill {
+      font-size:0.73rem; font-weight:500; padding:3px 10px; border-radius:50px;
+      background:rgba(124,58,237,0.08); color:var(--purple);
+    }
+
+    /* ── PACKAGES ── */
+    .pkgs-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:28px; }
+    .pkg-card {
+      background:#fff; border-radius:var(--radius); overflow:hidden;
+      border:1px solid var(--border); box-shadow:var(--shadow);
+      transition:transform 0.3s, box-shadow 0.3s;
+    }
+    .pkg-card:hover { transform:translateY(-6px); box-shadow:var(--shadowL); }
+    .pkg-img { height:180px; overflow:hidden; position:relative; }
+    .pkg-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.4s; }
+    .pkg-card:hover .pkg-img img { transform:scale(1.07); }
+    .pkg-label {
+      position:absolute; top:12px; left:12px;
+      font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em;
+      padding:4px 10px; border-radius:50px; background:var(--grad); color:#fff;
+    }
+    .pkg-body { padding:20px; }
+    .pkg-body h3 { font-size:1rem; font-weight:700; margin-bottom:8px; }
+    .pkg-meta { display:flex; gap:16px; font-size:0.8rem; color:var(--muted); margin-bottom:12px; }
+    .pkg-meta span { display:flex; align-items:center; gap:4px; }
+    .pkg-price-row { display:flex; align-items:baseline; justify-content:space-between; }
+    .pkg-price {
+      font-size:1.2rem; font-weight:800; letter-spacing:-0.5px;
+      background:var(--grad); -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .pkg-price small { font-size:0.75rem; font-weight:400; -webkit-text-fill-color:var(--muted); color:var(--muted); }
+    .book-mini-btn {
+      font-size:0.8rem; font-weight:600; padding:8px 18px; border-radius:50px;
+      background:var(--grad); color:#fff; border:none; cursor:pointer;
+      transition:opacity 0.2s, transform 0.2s;
+    }
+    .book-mini-btn:hover { opacity:0.88; transform:scale(1.04); }
+
+    /* ── STICKY BOOK BAR ── */
+    .sticky-bar {
+      position:fixed; bottom:0; left:0; right:0; z-index:250;
+      background:rgba(255,255,255,0.92); backdrop-filter:blur(24px);
+      border-top:1px solid var(--border);
+      padding:16px 56px; display:flex; align-items:center; justify-content:space-between;
+      box-shadow:0 -8px 32px rgba(0,0,0,0.08);
+      transform:translateY(100%); transition:transform 0.35s ease;
+    }
+    .sticky-bar.visible { transform:translateY(0); }
+    .sticky-info h4 { font-size:1rem; font-weight:700; }
+    .sticky-info p { font-size:0.82rem; color:var(--muted); margin-top:2px; }
+    .sticky-btns { display:flex; gap:12px; }
+    .btn-outline {
+      padding:11px 24px; border-radius:50px; border:1.5px solid var(--border);
+      background:transparent; font-family:'Inter',sans-serif; font-size:0.875rem; font-weight:600;
+      cursor:pointer; color:var(--text); transition:border-color 0.2s, color 0.2s;
+    }
+    .btn-outline:hover { border-color:var(--purple); color:var(--purple); }
+    .btn-primary {
+      padding:11px 28px; border-radius:50px; border:none;
+      background:var(--grad); color:#fff;
+      font-family:'Inter',sans-serif; font-size:0.875rem; font-weight:600;
+      cursor:pointer; transition:opacity 0.2s, transform 0.2s;
+    }
+    .btn-primary:hover { opacity:0.9; transform:translateY(-1px); }
+
+    /* ── DESTINATION SWITCHER ── */
+    .switcher-section {
+      background:#fff; border-top:1px solid var(--border);
+      padding:64px 0;
+    }
+    .switcher-inner { max-width:1100px; margin:0 auto; padding:0 56px; }
+    .switcher-inner .sec-header { text-align:center; }
+    .switcher-row {
+      display:flex; gap:20px; overflow-x:auto; padding-bottom:12px;
+      scrollbar-width:none;
+    }
+    .switcher-row::-webkit-scrollbar { display:none; }
+    .dest-thumb {
+      flex-shrink:0; width:180px; border-radius:14px; overflow:hidden;
+      position:relative; cursor:pointer; height:120px;
+      transition:transform 0.3s, box-shadow 0.3s;
+    }
+    .dest-thumb:hover { transform:scale(1.04); box-shadow:var(--shadowL); }
+    .dest-thumb.active::after {
+      content:''; position:absolute; inset:0;
+      border:3px solid var(--pink); border-radius:14px; pointer-events:none;
+    }
+    .dest-thumb img { width:100%; height:100%; object-fit:cover; }
+    .dest-thumb .dt-label {
+      position:absolute; bottom:0; left:0; right:0;
+      background:linear-gradient(to top,rgba(0,0,0,0.75),transparent);
+      color:#fff; font-size:0.8rem; font-weight:600; padding:10px 12px 10px;
+    }
+
+    /* ── LOADING / EMPTY STATES ── */
+    .loading-pulse {
+      display:grid; grid-template-columns:repeat(3,1fr); gap:28px;
+    }
+    .skeleton {
+      background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);
+      background-size:200% 100%;
+      animation:shimmer 1.4s ease infinite;
+      border-radius:var(--radius); height:260px;
+    }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    .empty-msg {
+      text-align:center; padding:64px 0;
+      color:var(--muted); font-size:0.95rem;
+    }
+    .empty-msg .big { font-size:3rem; margin-bottom:12px; }
+    .fade-in { animation:fadeUp 0.6s ease forwards; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">WanderWise</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="planner.html">Plan a Trip</a></li>
+    <li><a href="index.html#destinations">Destinations</a></li>
+  </ul>
+  <a class="nav-cta" href="planner.html">Book Now</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="destHero">
+  <div class="hero-blob b1"></div>
+  <div class="hero-blob b2"></div>
+  <img class="hero-img" id="heroImg" src="" alt="" onerror="this.style.background='linear-gradient(135deg,#7C3AED,#FF2D78)'"/>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge"><span></span><span id="heroBadgeText">Loading...</span></div>
+    <h1 class="hero-title" id="heroTitle"> - </h1>
+    <p class="hero-sub" id="heroSub">Discover the magic of this incredible destination.</p>
+    <div class="hero-stats" id="heroStats"></div>
+  </div>
+  <div class="scroll-hint">
+    <div class="line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- TAB BAR -->
+<div class="tab-bar-wrap">
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('overview')">Overview</button>
+    <button class="tab-btn" onclick="switchTab('spots')">Tourist Spots</button>
+    <button class="tab-btn" onclick="switchTab('hotels')">Hotels</button>
+    <button class="tab-btn" onclick="switchTab('packages')">Packages</button>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="main-wrap">
+
+  <!-- OVERVIEW -->
+  <div class="tab-panel active" id="panel-overview">
+    <div class="overview-grid">
+      <div class="overview-text">
+        <div class="sec-header">
+          <span class="sec-tag">Destination Guide</span>
+          <h2 class="sec-title" id="ovTitle">Explore</h2>
+          <p class="sec-sub" id="ovSub">Everything you need to plan your perfect trip.</p>
+        </div>
+        <div id="ovDesc"></div>
+
+        <!-- photo mini-grid -->
+        <div class="photo-grid" id="ovPhotos"></div>
+
+        <div class="highlights-list" id="ovHighlights"></div>
+      </div>
+      <div class="overview-sidebar">
+        <div class="info-card" id="weatherCard">
+          <h4>Best Time to Visit</h4>
+          <div id="weatherInfo"></div>
+        </div>
+        <div class="info-card" id="quickFacts">
+          <h4>Quick Facts</h4>
+          <div id="factsRows"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SPOTS -->
+  <div class="tab-panel" id="panel-spots">
+    <div class="sec-header">
+      <span class="sec-tag">Must Visit</span>
+      <h2 class="sec-title">Tourist Spots</h2>
+      <p class="sec-sub">Handpicked experiences you'll never forget.</p>
+    </div>
+    <div id="spotsContainer">
+      <div class="loading-pulse"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+    </div>
+  </div>
+
+  <!-- HOTELS -->
+  <div class="tab-panel" id="panel-hotels">
+    <div class="sec-header">
+      <span class="sec-tag">Where to Stay</span>
+      <h2 class="sec-title">Hotels &amp; Stays</h2>
+      <p class="sec-sub">Comfortable stays for every budget.</p>
+    </div>
+    <div id="hotelsContainer">
+      <div class="loading-pulse"><div class="skeleton"></div><div class="skeleton"></div></div>
+    </div>
+  </div>
+
+  <!-- PACKAGES -->
+  <div class="tab-panel" id="panel-packages">
+    <div class="sec-header">
+      <span class="sec-tag">Best Value</span>
+      <h2 class="sec-title">Travel Packages</h2>
+      <p class="sec-sub">All-inclusive deals curated just for you.</p>
+    </div>
+    <div id="pkgsContainer">
+      <div class="loading-pulse"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+    </div>
+  </div>
+
+</div><!-- /main-wrap -->
+
+<!-- DESTINATION SWITCHER -->
+<section class="switcher-section">
+  <div class="switcher-inner">
+    <div class="sec-header">
+      <span class="sec-tag">Explore More</span>
+      <h2 class="sec-title">Other Destinations</h2>
+    </div>
+    <div class="switcher-row" id="switcherRow"></div>
+  </div>
+</section>
+
+<!-- STICKY BOOK BAR -->
+<div class="sticky-bar" id="stickyBar">
+  <div class="sticky-info">
+    <h4 id="stickyTitle"> - </h4>
+    <p id="stickyMeta">Starting from <strong id="stickyPrice">₹9,999</strong> per person</p>
+  </div>
+  <div class="sticky-btns">
+    <button class="btn-outline" onclick="switchTab('hotels')">View Hotels</button>
+    <button class="btn-primary" onclick="window.location.href='planner.html'">Plan This Trip</button>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:8080/api';
+
+/* ── Destination data ── */
+const DEST_DATA = {
+  'Goa': {
+    sub: 'Sun, sand, and endless shores on India\'s party coast.',
+    badge: 'Beach Paradise',
+    hero: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=1600&q=80',
+    photos: [
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80',
+      'https://images.unsplash.com/photo-1540541338287-41700207dee6?w=600&q=80',
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
+    ],
+    desc: ['Goa is India\'s smallest state but packs the biggest punch  -  golden beaches, azure waters, and a nightlife scene that never sleeps. Portuguese colonial history blends seamlessly with vibrant Hindu culture, creating a destination unlike anywhere else.','Whether you\'re hunting for the freshest seafood shack on a quiet northern beach, dancing till dawn at a Vagator club, or exploring the UNESCO-listed churches of Old Goa, every moment here is a postcard.'],
+    stats: [{val:'30+',lbl:'Beaches'},{val:'450',lbl:'Years of History'},{val:'12',lbl:'°C Min Temp'}],
+    highlights: [
+      {dot:'pink',  icon:'🏖️', title:'Beach Culture', desc:'From Calangute to Palolem  -  every beach has its own vibe.'},
+      {dot:'teal',  icon:'🦐', title:'Seafood & Cuisine', desc:'Prawns, crabs, and Goan curries you\'ll dream about.'},
+      {dot:'purple',icon:'⛪', title:'Portuguese Heritage', desc:'Basilica of Bom Jesus, Se Cathedral and more.'},
+      {dot:'peach', icon:'🎉', title:'Nightlife', desc:'Asia\'s most famous club scene in Anjuna & Vagator.'},
+    ],
+    weather: {icon:'☀️', temp:'28°C', desc:'Oct–Feb is ideal  -  dry, sunny, and perfect.'},
+    facts: [{k:'Language',v:'Konkani, Goa'},{k:'Currency',v:'INR ₹'},{k:'Best Season',v:'Oct – Mar'},{k:'Nearest Airport',v:'Dabolim (GOI)'},{k:'Avg Stay',v:'4–6 nights'}],
+    startPrice: '₹12,999',
+  },
+  'Manali': {
+    sub: 'Snow-capped peaks, roaring rivers, and alpine bliss in the Himalayas.',
+    badge: 'Mountain Escape',
+    hero: 'https://images.unsplash.com/photo-1605649487212-47bdab064df7?w=1600&q=80',
+    photos: [
+      'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=600&q=80',
+      'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=600&q=80',
+      'https://images.unsplash.com/photo-1517627043994-b991abb62fc8?w=600&q=80',
+    ],
+    desc: ['Manali sits at 2,050 metres in the Kullu Valley, framed by the Beas river and surrounded by peaks draped in pine and cedar. It\'s the launchpad for adventures to Rohtang Pass, Spiti, and Leh–Ladakh.','In winter the valley transforms into a snow globe  -  skiing at Solang, bonfires at apple orchards, and steaming cups of chai with a Himalayan view. Summers bring trekkers, bikers, and paragliders chasing clear skies.'],
+    stats: [{val:'2050',lbl:'Metres Altitude'},{val:'20+',lbl:'Trek Routes'},{val:'-10°',lbl:'Winter Low'}],
+    highlights: [
+      {dot:'teal',  icon:'🏔️', title:'Rohtang Pass', desc:'One of the world\'s most dramatic mountain roads.'},
+      {dot:'purple',icon:'🎿', title:'Skiing & Snow Sports', desc:'Solang Nala transforms into a ski resort in winter.'},
+      {dot:'pink',  icon:'🌊', title:'River Rafting', desc:'White-water thrills on the Beas.'},
+      {dot:'peach', icon:'🍎', title:'Apple Orchards', desc:'Walk through rows of orchards heavy with fruit.'},
+    ],
+    weather: {icon:'❄️', temp:'15°C', desc:'Mar–Jun for trekking; Dec–Feb for snow.'},
+    facts: [{k:'Language',v:'Hindi, Pahari'},{k:'Currency',v:'INR ₹'},{k:'Best Season',v:'Mar – Jun'},{k:'Nearest Airport',v:'Bhuntar (KUU)'},{k:'Avg Stay',v:'5–7 nights'}],
+    startPrice: '₹14,999',
+  },
+  'Jaipur': {
+    sub: 'The Pink City  -  royal palaces, bazaars, and Rajput grandeur.',
+    badge: 'Royal Heritage',
+    hero: 'https://images.unsplash.com/photo-1477587458883-47145ed94245?w=1600&q=80',
+    photos: [
+      'https://images.unsplash.com/photo-1477587458883-47145ed94245?w=600&q=80',
+      'https://images.unsplash.com/photo-1587474260584-136574528ed5?w=600&q=80',
+      'https://images.unsplash.com/photo-1545126933-b3c28b14e3b3?w=600&q=80',
+    ],
+    desc: ['Founded in 1727 by Maharaja Jai Singh II, Jaipur was the world\'s first planned city  -  its streets still follow the original grid. The entire old city is washed in terracotta pink, earning it the famous moniker.','From the towering Amer Fort to the delicate lattice of Hawa Mahal and the astronomical marvels of Jantar Mantar, Jaipur layers centuries of Rajput history into every corner. The bazaars spill over with block-print textiles, blue pottery, and gem-encrusted jewellery.'],
+    stats: [{val:'500+',lbl:'Years of History'},{val:'UNESCO',lbl:'World Heritage Site'},{k:'Best Season',v:'8 hrs',lbl:'Avg Sunshine'}],
+    highlights: [
+      {dot:'pink',  icon:'🏰', title:'Amer Fort', desc:'Massive hilltop fort with mirror-inlaid palaces.'},
+      {dot:'purple',icon:'🌅', title:'Hawa Mahal', desc:'953 windows designed for royal ladies to watch processions.'},
+      {dot:'teal',  icon:'🛍️', title:'Bazaars & Crafts', desc:'Johri, Bapu, Nehru  -  each bazaar is its own world.'},
+      {dot:'peach', icon:'🐘', title:'Elephant Village', desc:'Ethical elephant encounters on Amber road.'},
+    ],
+    weather: {icon:'🌤️', temp:'22°C', desc:'Oct–Mar is pleasant; summers are hot.'},
+    facts: [{k:'Language',v:'Hindi, Rajasthani'},{k:'Currency',v:'INR ₹'},{k:'Best Season',v:'Oct – Mar'},{k:'Nearest Airport',v:'Jaipur (JAI)'},{k:'Avg Stay',v:'3–4 nights'}],
+    startPrice: '₹9,999',
+  },
+  'Kerala': {
+    sub: 'God\'s Own Country  -  backwaters, spice gardens, and Ayurvedic bliss.',
+    badge: 'Nature & Wellness',
+    hero: 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=1600&q=80',
+    photos: [
+      'https://images.unsplash.com/photo-1567254790494-2a8c0bd9b7b5?w=600&q=80',
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80',
+    ],
+    desc: ['Kerala stretches 600 kilometres along India\'s southwestern coast, blessed with 44 rivers, tea estates that carpet the Western Ghats, and a backwater network that glitters like a mirror in the monsoon light.','A houseboat glide through Alleppey\'s canals at sunset, a Kathakali performance in Fort Kochi, a chai break in a Munnar tea garden  -  Kerala offers a slower, richer rhythm of travel that stays with you long after you\'ve left.'],
+    stats: [{val:'44',lbl:'Rivers'},{val:'900km',lbl:'Coastline'},{val:'UNESCO',lbl:'Biosphere Reserves'}],
+    highlights: [
+      {dot:'teal',  icon:'🚢', title:'Backwater Houseboats', desc:'Drift through palm-lined canals on a kettuvallam.'},
+      {dot:'pink',  icon:'🍵', title:'Tea Estates', desc:'Walk through misty Munnar hills at 1600m.'},
+      {dot:'purple',icon:'💆', title:'Ayurveda & Wellness', desc:'Authentic Panchakarma treatments and yoga.'},
+      {dot:'peach', icon:'🐘', title:'Wildlife Sanctuaries', desc:'Elephants, tigers, and leopards in Wayanad.'},
+    ],
+    weather: {icon:'🌴', temp:'26°C', desc:'Sep–Mar for backwaters; Apr–May for hill stations.'},
+    facts: [{k:'Language',v:'Malayalam'},{k:'Currency',v:'INR ₹'},{k:'Best Season',v:'Sep – Mar'},{k:'Nearest Airport',v:'Kochi (COK)'},{k:'Avg Stay',v:'6–8 nights'}],
+    startPrice: '₹11,999',
+  },
+  'Ladakh': {
+    sub: 'The last frontier  -  barren moonscapes, Buddhist monasteries, and crystal lakes.',
+    badge: 'High Altitude',
+    hero: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&q=80',
+    photos: [
+      'https://images.unsplash.com/photo-1605649487212-47bdab064df7?w=600&q=80',
+      'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=600&q=80',
+      'https://images.unsplash.com/photo-1560707303-4e980ce876ad?w=600&q=80',
+    ],
+    desc: ['Ladakh sits at the roof of the world, 3,500 metres above sea level, sandwiched between the Karakoram and Great Himalayan ranges. Its landscapes are alien  -  chocolate mountains, azure skies, and the surreal blue of Pangong Tso.','Ancient monasteries like Thiksey and Diskit perch on crumbling ridgelines, their prayer flags streaming in the wind. Every journey here  -  whether by bike, jeep, or foot  -  feels like an expedition to the edge of the earth.'],
+    stats: [{val:'3500m',lbl:'Altitude'},{val:'600+',lbl:'Monasteries'},{val:'-30°',lbl:'Winter Low'}],
+    highlights: [
+      {dot:'teal',  icon:'💎', title:'Pangong Tso', desc:'Stunning blue lake spanning India and China at 4350m.'},
+      {dot:'purple',icon:'⛩️', title:'Ancient Monasteries', desc:'Hemis, Thiksey, Diskit  -  Buddhist art at altitude.'},
+      {dot:'pink',  icon:'🏍️', title:'Bike Expeditions', desc:'Leh–Manali highway, one of the world\'s greatest road trips.'},
+      {dot:'peach', icon:'🦅', title:'Wildlife', desc:'Snow leopards, Tibetan wolves, and bar-headed geese.'},
+    ],
+    weather: {icon:'🌨️', temp:'20°C', desc:'Jun–Sep only  -  road access closed Oct to May.'},
+    facts: [{k:'Language',v:'Ladakhi, Hindi'},{k:'Currency',v:'INR ₹'},{k:'Best Season',v:'Jun – Sep'},{k:'Nearest Airport',v:'Leh (IXL)'},{k:'Avg Stay',v:'7–10 nights'}],
+    startPrice: '₹18,999',
+  },
+  'Udaipur': {
+    sub: 'The City of Lakes  -  shimmering palaces, romantic sunsets, and royal Rajputana grandeur.',
+    badge: 'Lake City',
+    hero: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?w=1600&q=80',
+    photos: [
+      'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=600&q=80',
+      'https://images.unsplash.com/photo-1587474260584-136574528ed5?w=600&q=80',
+      'https://images.unsplash.com/photo-1545126933-b3c28b14e3b3?w=600&q=80',
+    ],
+    desc: ['Udaipur is arguably India\'s most romantic city  -  its white-marble palaces seemingly floating on Lake Pichola, surrounded by the craggy Aravalli Hills. The City Palace, Jag Mandir, and the legendary Lake Palace hotel make it look like a Mughal fairy tale.','Stroll the narrow lanes of the old city at dusk, catch a classical Rajasthani dance performance, or simply watch the reflections shift on the lake as the sun sinks  -  Udaipur rewards slow travel more than almost anywhere in India.'],
+    stats: [{val:'5',lbl:'Scenic Lakes'},{val:'400+',lbl:'Years of History'},{val:'UNESCO',lbl:'Crafts City'}],
+    highlights: [
+      {dot:'teal',  icon:'🏯', title:'City Palace', desc:'The largest palace complex in Rajasthan with lake views.'},
+      {dot:'pink',  icon:'🚤', title:'Lake Pichola', desc:'Sunset boat rides to Jag Mandir island palace.'},
+      {dot:'purple',icon:'🎭', title:'Cultural Shows', desc:'Mewar Sound & Light Show and Bagore Ki Haveli dances.'},
+      {dot:'peach', icon:'🛕', title:'Jagdish Temple', desc:'17th-century Indo-Aryan temple in the heart of the old city.'},
+    ],
+    weather: {icon:'🌤️', temp:'24°C', desc:'Oct–Mar is perfect; avoid peak summer heat.'},
+    facts: [{k:'Language',v:'Hindi, Mewari'},{k:'Currency',v:'INR ₹'},{k:'Best Season',v:'Oct – Mar'},{k:'Nearest Airport',v:'Udaipur (UDR)'},{k:'Avg Stay',v:'3–4 nights'}],
+    startPrice: '₹10,499',
+  },
+  'Rishikesh': {
+    sub: 'The Yoga Capital  -  Himalayan rivers, ashrams, adventure sports, and spiritual energy.',
+    badge: 'Adventure & Spirit',
+    hero: 'https://images.unsplash.com/photo-1571401835393-8c5f35328320?w=1600&q=80',
+    photos: [
+      'https://images.unsplash.com/photo-1604535863267-ab34a40a2094?w=600&q=80',
+      'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600&q=80',
+      'https://images.unsplash.com/photo-1605649487212-47bdab064df7?w=600&q=80',
+    ],
+    desc: ['Nestled where the Ganges descends from the Himalayas, Rishikesh is a paradox  -  the thrilling rapids of Shivpuri next to the meditative silence of ashrams, bungee jumping beside chanting devotees at Ganga Aarti. The Beatles famously came here to meditate, and the world followed.','Whether you come to raft Class IV rapids, deepen a yoga practice, or simply sit on Laxman Jhula bridge watching the river thunder past, Rishikesh delivers both adrenaline and inner peace in equal measure.'],
+    stats: [{val:'24km',lbl:'Rafting Stretch'},{val:'200+',lbl:'Yoga Schools'},{val:'1000+',lbl:'Metres Altitude'}],
+    highlights: [
+      {dot:'teal',  icon:'🌊', title:'White-Water Rafting', desc:'Grade I–IV rapids from Shivpuri to Rishikesh  -  unforgettable.'},
+      {dot:'purple',icon:'🧘', title:'Yoga & Meditation', desc:'World-renowned ashrams for serious practitioners and beginners.'},
+      {dot:'pink',  icon:'🌅', title:'Ganga Aarti', desc:'Evening fire ceremony on the ghats  -  one of India\'s most moving sights.'},
+      {dot:'peach', icon:'🦅', title:'Bungee & Zip-Line', desc:'India\'s highest bungee jump at 83 metres in Mohan Chatti.'},
+    ],
+    weather: {icon:'🌿', temp:'20°C', desc:'Feb–May and Sep–Nov are ideal; avoid peak monsoon for rafting.'},
+    facts: [{k:'Language',v:'Hindi, Garhwali'},{k:'Currency',v:'INR ₹'},{k:'Best Season',v:'Feb – Jun, Sep – Nov'},{k:'Nearest Airport',v:'Dehradun (DED)'},{k:'Avg Stay',v:'3–5 nights'}],
+    startPrice: '₹8,499',
+  },
+  'Darjeeling': {
+    sub: 'The Queen of Hills  -  emerald tea gardens, Himalayan vistas, and the toy train.',
+    badge: 'Hill Station',
+    hero: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1600&q=80',
+    photos: [
+      'https://images.unsplash.com/photo-1574781589378-45f5f1d91c0f?w=600&q=80',
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
+      'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&q=80',
+    ],
+    desc: ['Perched at 2,042 metres in the Himalayan foothills, Darjeeling offers a view that stops time  -  on a clear dawn, Kanchenjunga (the world\'s third-highest peak) rises pink-gold from a sea of clouds, visible from Tiger Hill.','The UNESCO-listed toy train chugs through misty tea gardens, past colonial cottages and Buddhist monasteries. The tea here  -  Darjeeling First Flush  -  is the champagne of teas, and sipping it in a wooden tea house above the clouds is a perfect moment.'],
+    stats: [{val:'2042m',lbl:'Altitude'},{val:'87+',lbl:'Tea Gardens'},{val:'UNESCO',lbl:'Toy Train'}],
+    highlights: [
+      {dot:'teal',  icon:'🍵', title:'Tea Garden Tours', desc:'Walk through Happy Valley estate and learn the art of tea.'},
+      {dot:'purple',icon:'🚂', title:'Toy Train', desc:'UNESCO-listed Darjeeling Himalayan Railway  -  iconic.'},
+      {dot:'pink',  icon:'🌅', title:'Tiger Hill Sunrise', desc:'Watch Kanchenjunga light up at dawn  -  a bucket-list moment.'},
+      {dot:'peach', icon:'🦁', title:'Tiger Hill & Batasia Loop', desc:'360° Himalayan panoramas and war memorial gardens.'},
+    ],
+    weather: {icon:'🌫️', temp:'12°C', desc:'Mar–May and Oct–Nov for clear skies; Dec–Feb for snow.'},
+    facts: [{k:'Language',v:'Bengali, Nepali, Hindi'},{k:'Currency',v:'INR ₹'},{k:'Best Season',v:'Mar – May, Oct – Nov'},{k:'Nearest Airport',v:'Bagdogra (IXB)'},{k:'Avg Stay',v:'3–4 nights'}],
+    startPrice: '₹9,999',
+  },
+  'Shimla': {
+    sub: 'The Summer Capital  -  colonial charm, pine forests, apple orchards, and snowy ridges.',
+    badge: 'Colonial Hill Town',
+    hero: 'https://images.unsplash.com/photo-1617195737496-bc30194e3a19?w=1600&q=80',
+    photos: [
+      'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=600&q=80',
+      'https://images.unsplash.com/photo-1517627043994-b991abb62fc8?w=600&q=80',
+      'https://images.unsplash.com/photo-1576485375217-d6a95e34d043?w=600&q=80',
+    ],
+    desc: ['Once the summer capital of British India, Shimla still has that colonial swagger  -  Gothic churches, Victorian buildings, and the famous Mall Road where evenings are for strolling. At 2,205 metres, it sits above the heat and haze of the plains.','In winter, snow blankets the ridge and rooftops; in summer it\'s a green escape with views stretching to distant snowcaps. Kufri, Chail, and Naldehra are easy day trips for deeper Himalayan wilderness just beyond the town.'],
+    stats: [{val:'2205m',lbl:'Altitude'},{val:'1864',lbl:'Year Established'},{val:'-5°',lbl:'Winter Low'}],
+    highlights: [
+      {dot:'teal',  icon:'🛤️', title:'The Mall Road', desc:'Colonial-era promenade lined with shops, cafes, and heritage buildings.'},
+      {dot:'purple',icon:'⛪', title:'Christ Church', desc:'Landmark neo-Gothic church on the ridge since 1857.'},
+      {dot:'pink',  icon:'🎿', title:'Kufri Snow Sports', desc:'Skiing, tobogganing, and snow zorbing in winter.'},
+      {dot:'peach', icon:'🍎', title:'Apple Orchards', desc:'Visit Mashobra\'s orchards in autumn  -  apple season at its peak.'},
+    ],
+    weather: {icon:'❄️', temp:'14°C', desc:'Mar–Jun for pleasant weather; Dec–Feb for snow experience.'},
+    facts: [{k:'Language',v:'Hindi, Pahari'},{k:'Currency',v:'INR ₹'},{k:'Best Season',v:'Mar – Jun, Dec – Jan'},{k:'Nearest Airport',v:'Shimla (SLV) / Chandigarh'},{k:'Avg Stay',v:'3–4 nights'}],
+    startPrice: '₹8,999',
+  },
+  'Varanasi': {
+    sub: 'The Eternal City  -  ghats, Ganga Aarti, ancient temples, and the soul of India.',
+    badge: 'Spiritual Capital',
+    hero: 'https://images.unsplash.com/photo-1561361058-c24cecae35ca?w=1600&q=80',
+    photos: [
+      'https://images.unsplash.com/photo-1560707303-4e980ce876ad?w=600&q=80',
+      'https://images.unsplash.com/photo-1572445271523-1b8a0c94e99d?w=600&q=80',
+      'https://images.unsplash.com/photo-1487474496963-c2f7b62baf0d?w=600&q=80',
+    ],
+    desc: ['Varanasi is one of the oldest continuously inhabited cities on Earth  -  3,000 years of worship, philosophy, music, and silk weaving compressed into the narrow lanes (galis) behind the ghats. Every inch of this city is sacred.','A dawn boat ride on the Ganga as priests chant and pilgrims bathe, and then the evening Ganga Aarti with hundreds of diyas floating downstream  -  these are experiences that rearrange your sense of what travel can mean. Varanasi doesn\'t just show you India, it shows you something eternal.'],
+    stats: [{val:'3000+',lbl:'Years Old'},{val:'88',lbl:'Ghats'},{val:'1000+',lbl:'Temples'}],
+    highlights: [
+      {dot:'teal',  icon:'🕯️', title:'Ganga Aarti', desc:'Nightly fire ceremony at Dashashwamedh Ghat  -  hypnotic and profound.'},
+      {dot:'purple',icon:'🛶', title:'Dawn Boat Ride', desc:'Rowing the Ganga at sunrise past the ancient ghats.'},
+      {dot:'pink',  icon:'🏛️', title:'Kashi Vishwanath', desc:'One of Hinduism\'s 12 Jyotirlinga temples  -  freshly renovated.'},
+      {dot:'peach', icon:'🧵', title:'Banarasi Silk', desc:'World-famous silk saris woven on hand looms in old city workshops.'},
+    ],
+    weather: {icon:'🌞', temp:'23°C', desc:'Oct–Mar is ideal; avoid May–Jun (extreme heat 45°C+).'},
+    facts: [{k:'Language',v:'Hindi, Bhojpuri'},{k:'Currency',v:'INR ₹'},{k:'Best Season',v:'Oct – Mar'},{k:'Nearest Airport',v:'Varanasi (VNS)'},{k:'Avg Stay',v:'2–3 nights'}],
+    startPrice: '₹7,999',
+  },
+  'Agra': {
+    sub: 'Home of the Taj Mahal  -  Mughal magnificence, love in marble, and empire at its peak.',
+    badge: 'Mughal Splendour',
+    hero: 'https://images.unsplash.com/photo-1564507592333-c60657eea523?w=1600&q=80',
+    photos: [
+      'https://images.unsplash.com/photo-1548013146-72479768bada?w=600&q=80',
+      'https://images.unsplash.com/photo-1592396268503-2a14e8d87e7d?w=600&q=80',
+      'https://images.unsplash.com/photo-1477587458883-47145ed94245?w=600&q=80',
+    ],
+    desc: ['The Taj Mahal needs no introduction  -  Shah Jahan\'s white-marble monument of love for Mumtaz Mahal is arguably the most beautiful building on Earth. Seventeen years, 22,000 workers, and perfect symmetry across every axis: it still stops you cold in person.','But Agra is more than one monument. Agra Fort\'s blood-red sandstone is a Mughal masterpiece in its own right, and Fatehpur Sikri  -  Emperor Akbar\'s abandoned ghost capital 40km away  -  is one of India\'s best day trips.'],
+    stats: [{val:'UNESCO',lbl:'World Heritage'},{val:'1653',lbl:'Year Completed'},{val:'22000',lbl:'Craftsmen'}],
+    highlights: [
+      {dot:'teal',  icon:'🕌', title:'Taj Mahal', desc:'UNESCO heritage icon  -  best at dawn when the light turns it pink.'},
+      {dot:'purple',icon:'🏯', title:'Agra Fort', desc:'Massive Mughal citadel with palaces, mosques, and Taj views.'},
+      {dot:'pink',  icon:'🏙️', title:'Fatehpur Sikri', desc:'Akbar\'s abandoned sandstone capital  -  eerily preserved.'},
+      {dot:'peach', icon:'🍬', title:'Petha Sweet', desc:'Agra\'s legendary translucent candy, made since the Mughal era.'},
+    ],
+    weather: {icon:'🌤️', temp:'21°C', desc:'Oct–Mar is perfect; sunrise visits are worth the early start.'},
+    facts: [{k:'Language',v:'Hindi, Urdu'},{k:'Currency',v:'INR ₹'},{k:'Best Season',v:'Oct – Mar'},{k:'Nearest Airport',v:'Agra (AGR) / Lucknow'},{k:'Avg Stay',v:'1–2 nights'}],
+    startPrice: '₹6,999',
+  },
+  'Coorg': {
+    sub: 'Scotland of India  -  misty coffee estates, cardamom forests, and cascading waterfalls.',
+    badge: 'Coffee Country',
+    hero: 'https://images.unsplash.com/photo-1580477371194-5a66f42d5a37?w=1600&q=80',
+    photos: [
+      'https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=600&q=80',
+      'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=600&q=80',
+      'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600&q=80',
+    ],
+    desc: ['Coorg (Kodagu) is Karnataka\'s most beautiful district  -  a landscape of undulating hills thick with coffee and pepper plantations, mist rolling off the Western Ghats, and rivers running cold and fast through deep jungle. It\'s the antidote to every overstimulating city trip.','The Kodava people have a warrior heritage, a distinct cuisine, and a culture centred on family estates (ainas). Stay in a plantation bungalow, walk among coffee flowers, white-water raft the River Barapole, and head deep into Nagarhole Tiger Reserve at dusk.'],
+    stats: [{val:'30%',lbl:'India\'s Coffee'},{val:'1525m',lbl:'Max Altitude'},{val:'100+',lbl:'Waterfalls'}],
+    highlights: [
+      {dot:'teal',  icon:'☕', title:'Coffee Estate Walks', desc:'Stroll through Arabica and Robusta plantations with plantation owners.'},
+      {dot:'purple',icon:'💦', title:'Abbey & Irupu Falls', desc:'Dramatic waterfalls hidden in forest  -  stunning post-monsoon.'},
+      {dot:'pink',  icon:'🐘', title:'Nagarhole Safari', desc:'Tiger, leopard, and elephant in one of India\'s best reserves.'},
+      {dot:'peach', icon:'🏄', title:'River Rafting', desc:'Grade 3+ rapids on the River Barapole through dense forest.'},
+    ],
+    weather: {icon:'🌦️', temp:'20°C', desc:'Oct–May is ideal; Jul–Aug is lush and green (moderate rain).'},
+    facts: [{k:'Language',v:'Kannada, Kodava'},{k:'Currency',v:'INR ₹'},{k:'Best Season',v:'Oct – May'},{k:'Nearest Airport',v:'Mangalore (IXE) / Bangalore (BLR)'},{k:'Avg Stay',v:'3–4 nights'}],
+    startPrice: '₹9,499',
+  },
+  'Ooty': {
+    sub: 'The Nilgiri Queen  -  blue mountains, rose gardens, toy train, and colonial cool.',
+    badge: 'Nilgiri Hills',
+    hero: 'https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=1600&q=80',
+    photos: [
+      'https://images.unsplash.com/photo-1551918120-9739cb430c6d?w=600&q=80',
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
+      'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&q=80',
+    ],
+    desc: ['Ooty (Udhagamandalam) sits at 2,240 metres in the Nilgiri Hills, where the air is cool, the eucalyptus forests glow silver in the morning mist, and the toy train from Mettupalayam is one of the most scenic railway journeys in the world.','The Botanical Gardens burst with 650 plant species; Ooty Lake is perfect for a quiet paddle; and Doddabetta  -  the Nilgiris\' highest peak at 2,637m  -  gives panoramic views on clear days. It\'s the quintessential South Indian hill station.'],
+    stats: [{val:'2240m',lbl:'Altitude'},{val:'UNESCO',lbl:'Nilgiri Mountain Railway'},{val:'2637m',lbl:'Doddabetta Peak'}],
+    highlights: [
+      {dot:'teal',  icon:'🌹', title:'Botanical Gardens', desc:'150-year-old gardens with 650+ plant species and a 20 million-year-old tree fossil.'},
+      {dot:'purple',icon:'🚂', title:'Nilgiri Mountain Railway', desc:'UNESCO rack-and-pinion toy train through misty Nilgiri tunnels.'},
+      {dot:'pink',  icon:'🏔️', title:'Doddabetta Peak', desc:'Highest point in the Nilgiris at 2,637m with sweeping views.'},
+      {dot:'peach', icon:'🍫', title:'Ooty Chocolate & Tea', desc:'Fresh homemade chocolates and Nilgiri tea  -  the town\'s great souvenirs.'},
+    ],
+    weather: {icon:'🌫️', temp:'15°C', desc:'Apr–Jun for the flower season; Dec–Feb for cool crisp air.'},
+    facts: [{k:'Language',v:'Tamil, Kannada'},{k:'Currency',v:'INR ₹'},{k:'Best Season',v:'Apr – Jun, Sep – Nov'},{k:'Nearest Airport',v:'Coimbatore (CJB)'},{k:'Avg Stay',v:'2–3 nights'}],
+    startPrice: '₹7,499',
+  },
+  'Mysore': {
+    sub: 'The City of Palaces  -  Dasara grandeur, sandalwood, silk, and regal architecture.',
+    badge: 'Palace City',
+    hero: 'https://images.unsplash.com/photo-1580227974546-cd5b9a09d2c5?w=1600&q=80',
+    photos: [
+      'https://images.unsplash.com/photo-1591001841853-9edacb3dc42c?w=600&q=80',
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
+      'https://images.unsplash.com/photo-1487474496963-c2f7b62baf0d?w=600&q=80',
+    ],
+    desc: ['Mysore (Mysuru) is South India\'s most regal city  -  home to the magnificent Amba Vilas Palace (Mysore Palace), one of India\'s most visited monuments. The Wodeyar dynasty left behind a city of ordered streets, grand gates, and a culture defined by silk, sandalwood, and classical music.','Dasara here is one of India\'s greatest festivals  -  ten days of processions, palace illuminations, and a golden howdah elephant parade that draws millions. But even outside festival season, Mysore rewards wanderers with flower markets, incense-scented bazaars, and the serenity of Chamundi Hills above.'],
+    stats: [{val:'5',lbl:'Palaces'},{val:'1399',lbl:'Founded'},{val:'96000',lbl:'Palace Bulbs'}],
+    highlights: [
+      {dot:'teal',  icon:'🏛️', title:'Mysore Palace', desc:'Illuminated with 96,000 bulbs on Sunday evenings  -  breathtaking.'},
+      {dot:'purple',icon:'🛕', title:'Chamundi Hills', desc:'Ancient Chamundeshwari temple with panoramic city views.'},
+      {dot:'pink',  icon:'🎊', title:'Dasara Festival', desc:'South India\'s most spectacular festival in October.'},
+      {dot:'peach', icon:'🌸', title:'Devaraja Market', desc:'Old bazaar overflowing with jasmine, sandalwood, and fresh silk.'},
+    ],
+    weather: {icon:'🌤️', temp:'25°C', desc:'Oct–Feb is ideal; Dasara (Oct) is the best time to visit.'},
+    facts: [{k:'Language',v:'Kannada'},{k:'Currency',v:'INR ₹'},{k:'Best Season',v:'Oct – Mar'},{k:'Nearest Airport',v:'Mysore (MYQ) / Bangalore (BLR)'},{k:'Avg Stay',v:'2–3 nights'}],
+    startPrice: '₹7,999',
+  },
+  'Hampi': {
+    sub: 'The Lost Empire  -  boulder-strewn ruins of the Vijayanagara Kingdom amid surreal landscapes.',
+    badge: 'Ancient Ruins',
+    hero: 'https://images.unsplash.com/photo-1590157765408-3eb44fe86d24?w=1600&q=80',
+    photos: [
+      'https://images.unsplash.com/photo-1586002219254-a89d2c73b7b4?w=600&q=80',
+      'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=600&q=80',
+      'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&q=80',
+    ],
+    desc: ['Hampi was once the richest city in the world  -  the capital of the Vijayanagara Empire, with a population larger than Rome. Today it is a UNESCO World Heritage Site of extraordinary ruins scattered across an otherworldly landscape of giant orange boulders and banana groves beside the Tungabhadra river.','No photograph quite prepares you for the sheer scale: the Vittala Temple\'s musical pillars, the Elephant Stables, the Queen\'s Bath, and the magnificent Virupaksha Temple still active after 1,500 years. Watching the sun set from Matanga Hill over a sea of ruins is one of India\'s most profound experiences.'],
+    stats: [{val:'UNESCO',lbl:'World Heritage'},{val:'1336',lbl:'Founded'},{val:'500+',lbl:'Monuments'}],
+    highlights: [
+      {dot:'teal',  icon:'🏛️', title:'Vittala Temple', desc:'Stone chariot and musical pillars  -  masterpiece of Vijayanagara art.'},
+      {dot:'purple',icon:'🛕', title:'Virupaksha Temple', desc:'1,500-year-old active temple rising 50 metres in the heart of Hampi.'},
+      {dot:'pink',  icon:'🌄', title:'Matanga Hill Sunset', desc:'Panoramic view over the entire boulder-and-ruin landscape at dusk.'},
+      {dot:'peach', icon:'🚣', title:'Coracle Boat Rides', desc:'Cross the Tungabhadra in a traditional round wicker boat.'},
+    ],
+    weather: {icon:'🌞', temp:'27°C', desc:'Oct–Feb is ideal; avoid Mar–May (extreme 40°C+ heat).'},
+    facts: [{k:'Language',v:'Kannada, Telugu'},{k:'Currency',v:'INR ₹'},{k:'Best Season',v:'Oct – Feb'},{k:'Nearest Airport',v:'Hubli (HBX) / Bellary'},{k:'Avg Stay',v:'2–3 nights'}],
+    startPrice: '₹6,499',
+  },
+};
+
+/* ── Unsplash fallbacks ── */
+const SPOT_IMGS = {
+  nature:  'https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=400&q=70',
+  history: 'https://images.unsplash.com/photo-1477587458883-47145ed94245?w=400&q=70',
+  culture: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=70',
+  beach:   'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&q=70',
+  default: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400&q=70',
+};
+const HOTEL_IMGS = [
+  'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=70',
+  'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=70',
+  'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=600&q=70',
+  'https://images.unsplash.com/photo-1614267861476-0d129972a0f4?w=600&q=70',
+  'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&q=70',
+];
+const PKG_IMGS = [
+  'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=400&q=70',
+  'https://images.unsplash.com/photo-1605649487212-47bdab064df7?w=400&q=70',
+  'https://images.unsplash.com/photo-1599661046289-e31897846e41?w=400&q=70',
+  'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=400&q=70',
+  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=70',
+];
+
+/* ── State ── */
+let currentDest = null;
+let allDests    = [];
+
+/* ── Init ── */
+async function init() {
+  const params = new URLSearchParams(location.search);
+  const destId = parseInt(params.get('id')) || 1;
+
+  try {
+    const res = await fetch(`${API}/destinations`);
+    allDests = await res.json();
+  } catch(e) {
+    allDests = [
+      {destinationId:1,  city:'Goa',       country:'India', description:'Beaches and nightlife on India\'s western coast.', rating:4.8},
+      {destinationId:2,  city:'Manali',    country:'India', description:'Himalayan mountain escape with snow and treks.', rating:4.9},
+      {destinationId:3,  city:'Jaipur',    country:'India', description:'The royal Pink City of Rajasthan.', rating:4.7},
+      {destinationId:4,  city:'Kerala',    country:'India', description:'Backwaters, spices, and God\'s Own Country.', rating:4.9},
+      {destinationId:5,  city:'Ladakh',    country:'India', description:'High-altitude Buddhist landscape.', rating:5.0},
+      {destinationId:6,  city:'Udaipur',   country:'India', description:'The City of Lakes  -  romantic palaces on shimmering water.', rating:4.8},
+      {destinationId:7,  city:'Rishikesh', country:'India', description:'Yoga capital and adventure hub on the Ganges.', rating:4.7},
+      {destinationId:8,  city:'Darjeeling',country:'India', description:'Tea gardens, toy train, and Himalayan sunrise.', rating:4.8},
+      {destinationId:9,  city:'Shimla',    country:'India', description:'Colonial hill station with pine forests and snow.', rating:4.6},
+      {destinationId:10, city:'Varanasi',  country:'India', description:'One of the world\'s oldest cities on the sacred Ganga.', rating:4.7},
+      {destinationId:11, city:'Agra',      country:'India', description:'Home of the Taj Mahal and Mughal grandeur.', rating:4.9},
+      {destinationId:12, city:'Coorg',     country:'India', description:'Misty coffee estates and waterfalls in Karnataka.', rating:4.7},
+      {destinationId:13, city:'Ooty',      country:'India', description:'Nilgiri hills, botanical gardens, and toy train.', rating:4.6},
+      {destinationId:14, city:'Mysore',    country:'India', description:'Palace city famous for Dasara and silk.', rating:4.8},
+      {destinationId:15, city:'Hampi',     country:'India', description:'UNESCO ruins of the Vijayanagara Empire.', rating:4.9},
+    ];
+  }
+
+  currentDest = allDests.find(d => d.destinationId === destId) || allDests[0];
+  populateHero(currentDest);
+  populateOverview(currentDest);
+  populateSwitcher(allDests, currentDest.destinationId);
+  loadSpots(currentDest.city);
+  loadHotels(currentDest.city);
+  loadPackages(currentDest.city);
+  showStickyBar(currentDest);
+}
+
+/* ── Hero ── */
+function populateHero(dest) {
+  const info = DEST_DATA[dest.city] || {};
+  document.title = `${dest.city} · WanderWise`;
+  document.getElementById('heroImg').src = info.hero || `https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1600&q=80`;
+  document.getElementById('heroImg').alt = dest.city;
+  document.getElementById('heroBadgeText').textContent = info.badge || dest.country;
+  document.getElementById('heroTitle').textContent = dest.city;
+  document.getElementById('heroSub').textContent = info.sub || dest.description;
+
+  const stats = info.stats || [{val:'4.9★',lbl:'Rating'},{val:'Top 10',lbl:'Destination'},{val:'Year-Round',lbl:'Travel'}];
+  document.getElementById('heroStats').innerHTML = stats.map(s =>
+    `<div class="hero-stat"><span class="val">${s.val}</span><span class="lbl">${s.lbl}</span></div>`
+  ).join('');
+}
+
+/* ── Overview ── */
+function populateOverview(dest) {
+  const info = DEST_DATA[dest.city] || {};
+  document.getElementById('ovTitle').textContent = `Explore ${dest.city}`;
+  document.getElementById('ovSub').textContent = info.sub || dest.description;
+
+  // description paragraphs
+  const descs = info.desc || [dest.description || 'A beautiful destination waiting to be explored.'];
+  document.getElementById('ovDesc').innerHTML = descs.map(p => `<p>${p}</p>`).join('');
+
+  // photo grid
+  const photos = info.photos || [];
+  if(photos.length >= 3) {
+    document.getElementById('ovPhotos').innerHTML = `
+      <img class="big" src="${photos[0]}" alt="${dest.city}" onerror="this.style.background='#ddd'"/>
+      <img src="${photos[1]}" alt="${dest.city}" onerror="this.style.background='#ddd'"/>
+      <img src="${photos[2]}" alt="${dest.city}" onerror="this.style.background='#ddd'"/>
+    `;
+  }
+
+  // highlights
+  const hl = info.highlights || [];
+  document.getElementById('ovHighlights').innerHTML = hl.map(h =>
+    `<div class="highlight-item fade-in">
+      <div class="hi-dot ${h.dot}">${h.icon}</div>
+      <div class="hi-text"><strong>${h.title}</strong><span>${h.desc}</span></div>
+    </div>`
+  ).join('');
+
+  // weather
+  const w = info.weather || {icon:'🌤️', temp:'25°C', desc:'Best visited Oct–Mar.'};
+  document.getElementById('weatherInfo').innerHTML = `
+    <div class="weather-icon">${w.icon}</div>
+    <div class="weather-temp">${w.temp}</div>
+    <div class="weather-desc">${w.desc}</div>
+  `;
+
+  // facts
+  const facts = info.facts || [];
+  document.getElementById('factsRows').innerHTML = facts.map(f =>
+    `<div class="info-row"><span class="key">${f.k}</span><span class="val">${f.v}</span></div>`
+  ).join('');
+}
+
+/* ── Tabs ── */
+function switchTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+/* ── Spots ── */
+async function loadSpots(city) {
+  try {
+    const res = await fetch(`${API}/spots/search?city=${encodeURIComponent(city)}`);
+    const spots = await res.json();
+    renderSpots(spots);
+  } catch(e) {
+    renderSpots([]);
+  }
+}
+
+function spotType(name='') {
+  const n = name.toLowerCase();
+  if(n.includes('beach')||n.includes('sea')||n.includes('coast')) return 'beach';
+  if(n.includes('fort')||n.includes('palace')||n.includes('temple')||n.includes('church')||n.includes('museum')) return 'history';
+  if(n.includes('garden')||n.includes('park')||n.includes('lake')||n.includes('forest')||n.includes('valley')) return 'nature';
+  return 'culture';
+}
+
+function renderSpots(spots) {
+  const c = document.getElementById('spotsContainer');
+  if(!spots.length) {
+    c.innerHTML = `<div class="empty-msg"><div class="big">🗺️</div><p>Spots information coming soon for this destination.</p></div>`;
+    return;
+  }
+  c.innerHTML = `<div class="spots-grid">` + spots.map((s,i) => {
+    const type = spotType(s.spot_name || '');
+    const img  = SPOT_IMGS[type] || SPOT_IMGS.default;
+    const badgeCls = `badge-${type}`;
+    const label = type.charAt(0).toUpperCase()+type.slice(1);
+    return `
+      <div class="spot-card fade-in" style="animation-delay:${i*0.08}s">
+        <div class="spot-img">
+          <img src="${img}" alt="${s.spot_name}" onerror="this.style.background='#eee'"/>
+          <span class="spot-badge ${badgeCls}">${label}</span>
+        </div>
+        <div class="spot-body">
+          <h3>${s.spot_name}</h3>
+          <p>${s.description || 'A must-visit spot in '+s.city+'.'}</p>
+          <div class="spot-rating">★★★★★ <span style="color:var(--muted);font-weight:400">(Popular)</span></div>
+        </div>
+      </div>`;
+  }).join('') + `</div>`;
+}
+
+/* ── Hotels ── */
+async function loadHotels(city) {
+  try {
+    const res = await fetch(`${API}/hotels/search?city=${encodeURIComponent(city)}`);
+    const hotels = await res.json();
+    renderHotels(hotels);
+  } catch(e) {
+    renderHotels([]);
+  }
+}
+
+function renderHotels(hotels) {
+  const c = document.getElementById('hotelsContainer');
+  if(!hotels.length) {
+    c.innerHTML = `<div class="empty-msg"><div class="big">🏨</div><p>Hotel listings coming soon for this destination.</p></div>`;
+    return;
+  }
+  c.innerHTML = `<div class="hotels-grid">` + hotels.map((h,i) => {
+    const stars = '★'.repeat(Math.min(h.star_rating||4,5));
+    const img   = HOTEL_IMGS[i % HOTEL_IMGS.length];
+    const amenities = (h.amenities || 'WiFi, Pool, Breakfast').split(',').slice(0,3);
+    return `
+      <div class="hotel-card fade-in" style="animation-delay:${i*0.1}s">
+        <div class="hotel-img">
+          <img src="${img}" alt="${h.hotel_name}" onerror="this.style.background='#eee'"/>
+          <span class="hotel-stars">${stars} ${h.star_rating||4}-Star</span>
+        </div>
+        <div class="hotel-body">
+          <div class="hotel-name">${h.hotel_name}</div>
+          <div class="hotel-loc">📍 ${h.city || currentDest.city}</div>
+          <div class="hotel-amenities">
+            ${amenities.map(a=>`<span class="amenity-pill">${a.trim()}</span>`).join('')}
+          </div>
+          <div class="hotel-price">₹${Number(h.price_per_night||2999).toLocaleString('en-IN')}<span>/night</span></div>
+        </div>
+      </div>`;
+  }).join('') + `</div>`;
+}
+
+/* ── Packages ── */
+async function loadPackages(city) {
+  try {
+    const res = await fetch(`${API}/packages/search?city=${encodeURIComponent(city)}`);
+    let pkgs = await res.json();
+    if(!pkgs.length) throw new Error('empty');
+    renderPackages(pkgs);
+  } catch(e) {
+    const fallback = getFallbackPackages(city);
+    renderPackages(fallback);
+  }
+}
+
+function getFallbackPackages(city) {
+  const base = [
+    {package_name:`${city} Weekend Escape`,  duration_days:3, num_people:2, total_price:9999},
+    {package_name:`${city} Adventure Pack`, duration_days:5, num_people:4, total_price:14999},
+    {package_name:`${city} Luxury Retreat`, duration_days:7, num_people:2, total_price:24999},
+  ];
+  return base;
+}
+
+function renderPackages(pkgs) {
+  const c = document.getElementById('pkgsContainer');
+  c.innerHTML = `<div class="pkgs-grid">` + pkgs.slice(0,6).map((p,i) => {
+    const img = PKG_IMGS[i % PKG_IMGS.length];
+    return `
+      <div class="pkg-card fade-in" style="animation-delay:${i*0.08}s">
+        <div class="pkg-img">
+          <img src="${img}" alt="${p.package_name}" onerror="this.style.background='#eee'"/>
+          <span class="pkg-label">Best Value</span>
+        </div>
+        <div class="pkg-body">
+          <h3>${p.package_name}</h3>
+          <div class="pkg-meta">
+            <span>📅 ${p.duration_days} days</span>
+            <span>👥 ${p.num_people||2} people</span>
+          </div>
+          <div class="pkg-price-row">
+            <div class="pkg-price">₹${Number(p.total_price||9999).toLocaleString('en-IN')}<small>/person</small></div>
+            <button class="book-mini-btn" onclick="window.location.href='planner.html'">Book</button>
+          </div>
+        </div>
+      </div>`;
+  }).join('') + `</div>`;
+}
+
+/* ── Switcher ── */
+function populateSwitcher(dests, currentId) {
+  const info = DEST_DATA;
+  document.getElementById('switcherRow').innerHTML = dests.map(d => {
+    const img = (info[d.city]||{}).hero || `https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400&q=70`;
+    const active = d.destinationId === currentId ? 'active' : '';
+    return `
+      <div class="dest-thumb ${active}" onclick="window.location.href='destination.html?id=${d.destinationId}'">
+        <img src="${img}" alt="${d.city}" onerror="this.style.background='linear-gradient(135deg,#7C3AED,#FF2D78)'"/>
+        <div class="dt-label">${d.city}</div>
+      </div>`;
+  }).join('');
+}
+
+/* ── Sticky bar ── */
+function showStickyBar(dest) {
+  const info = DEST_DATA[dest.city] || {};
+  document.getElementById('stickyTitle').textContent = dest.city;
+  document.getElementById('stickyPrice').textContent = info.startPrice || '₹9,999';
+
+  const bar = document.getElementById('stickyBar');
+  window.addEventListener('scroll', () => {
+    bar.classList.toggle('visible', window.scrollY > 600);
+  }, { passive: true });
+}
+
+init();
+</script>
+<style>
+  .spot-card,.hotel-card,.pkg-card { transition:transform 0.3s,box-shadow 0.3s !important; }
+  .spot-card:hover  { box-shadow:0 20px 50px rgba(6,182,212,0.2) !important; }
+  .hotel-card:hover { box-shadow:0 20px 50px rgba(124,58,237,0.2) !important; }
+  .pkg-card:hover   { box-shadow:0 20px 50px rgba(255,45,120,0.2) !important; }
+  .hero-title { animation:fadeInUp 1s ease 0.5s both; }
+  .hero-sub   { animation:fadeInUp 1s ease 0.7s both; }
+  .hero-stats { animation:fadeInUp 1s ease 0.9s both; }
+  @keyframes fadeInUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+  .sec-tag { animation:gradCycle 5s ease infinite; }
+  @keyframes gradCycle { 0%,100%{background-position:0%} 50%{background-position:200%} }
+  .hero-badge .span:first-child { animation:dotPulse 1.5s ease infinite; }
+  @keyframes dotPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.8);opacity:0.5} }
+  .dest-thumb { transition:transform 0.3s,box-shadow 0.3s !important; }
+  .dest-thumb:hover { box-shadow:0 16px 40px rgba(255,45,120,0.3) !important; }
+  .tab-btn.active { color:transparent !important; background:linear-gradient(135deg,#FF2D78,#7C3AED); -webkit-background-clip:text; background-clip:text; }
+</style>
+<script src="animations.js"></script>
+<script src="chatbot.js"></script>
+</body>
+</html>
