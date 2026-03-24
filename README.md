@@ -1,4 +1,4 @@
-# WanderWise — Smart Travel Planner 
+# WanderWise - Smart Travel Planner 
 
 A full-stack travel planning web application.
 Plan trips across 15 Indian destinations with hotel booking, transport search, AI chatbot assistance, and an animated frontend.
