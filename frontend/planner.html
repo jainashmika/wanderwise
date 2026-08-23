@@ -413,9 +413,13 @@
   <a class="nav-logo" href="index.html">Wander<span>Wise</span></a>
   <ul class="nav-links">
     <li><a href="index.html">Home</a></li>
+    <li><a href="destination.html">Destinations</a></li>
     <li><a href="#" class="active">Plan</a></li>
+    <li><a href="payment.html">Payment</a></li>
   </ul>
-  <button class="nav-btn" onclick="window.location='index.html'">Back to Home</button>
+  <div id="navAuthArea" style="display:flex;align-items:center;gap:8px;">
+    <button class="nav-btn" onclick="window.location='index.html'">Back to Home</button>
+  </div>
 </nav>
 
 <div class="page-hero">
@@ -507,11 +511,8 @@
         </div>
         <div class="form-group">
           <label>Traveller Account</label>
-          <select id="userId">
-            <option value="1">Ashmika Jain</option>
-            <option value="2">Aakankshya Dash</option>
-            <option value="3">Kavya Srivastava</option>
-          </select>
+          <div id="userDisplay" style="padding:10px 14px;background:var(--gray2);border-radius:10px;font-size:0.9rem;font-weight:600;color:var(--black);">Loading...</div>
+          <input type="hidden" id="userId" value=""/>
         </div>
       </div>
       <div class="btn-row">
@@ -577,8 +578,8 @@
         <h2>Booking Confirmed!</h2>
         <p>Your trip is locked in. Time to pack your bags and get ready for an incredible adventure.</p>
         <div class="success-btns">
-          <button class="btn-next" onclick="resetPlanner()">Plan Another Trip</button>
-          <button class="btn-back" onclick="switchTabByName('bookings')">View Bookings</button>
+          <button class="btn-next" onclick="goToPayment()">Proceed to Payment</button>
+          <button class="btn-back" onclick="resetPlanner()">Plan Another Trip</button>
         </div>
       </div>
     </div>
@@ -669,6 +670,102 @@
   ];
   const TRANSPORT_ICONS = { 'Flight':'✈', 'Train':'🚂', 'Bus':'🚌' };
 
+  const FALLBACK_DESTS = [
+    {destinationId:1,  city:'Goa',        country:'India', bestSeason:'Oct - Mar'},
+    {destinationId:2,  city:'Manali',     country:'India', bestSeason:'Mar - Jun'},
+    {destinationId:3,  city:'Jaipur',     country:'India', bestSeason:'Oct - Mar'},
+    {destinationId:4,  city:'Kerala',     country:'India', bestSeason:'Sep - Mar'},
+    {destinationId:5,  city:'Ladakh',     country:'India', bestSeason:'Jun - Sep'},
+    {destinationId:6,  city:'Udaipur',    country:'India', bestSeason:'Oct - Mar'},
+    {destinationId:7,  city:'Rishikesh',  country:'India', bestSeason:'Feb - Jun'},
+    {destinationId:8,  city:'Darjeeling', country:'India', bestSeason:'Mar - May'},
+    {destinationId:9,  city:'Shimla',     country:'India', bestSeason:'Mar - Jun'},
+    {destinationId:10, city:'Varanasi',   country:'India', bestSeason:'Oct - Mar'},
+    {destinationId:11, city:'Agra',       country:'India', bestSeason:'Oct - Mar'},
+    {destinationId:12, city:'Coorg',      country:'India', bestSeason:'Oct - May'},
+    {destinationId:13, city:'Ooty',       country:'India', bestSeason:'Apr - Jun'},
+    {destinationId:14, city:'Mysore',     country:'India', bestSeason:'Oct - Mar'},
+    {destinationId:15, city:'Hampi',      country:'India', bestSeason:'Oct - Feb'},
+  ];
+
+  const FALLBACK_HOTELS = {
+    'Goa':        [
+      {hotelId:101, hotelName:'The Goa Beach Resort',  address:'Calangute Beach, Goa',        pricePerNight:3500, rating:4.5, availableRooms:10},
+      {hotelId:102, hotelName:'Zostel Goa',             address:'Anjuna, Goa',                 pricePerNight:850,  rating:4.3, availableRooms:20},
+      {hotelId:103, hotelName:'W Goa',                  address:'Vagator Beach, Goa',          pricePerNight:9500, rating:4.8, availableRooms:6},
+    ],
+    'Manali':     [
+      {hotelId:104, hotelName:'Snow Valley Inn',        address:'Mall Road, Manali',           pricePerNight:2200, rating:4.2, availableRooms:8},
+      {hotelId:105, hotelName:'Zostel Manali',          address:'Old Manali',                  pricePerNight:899,  rating:4.4, availableRooms:18},
+      {hotelId:106, hotelName:'The Himalayan',          address:'Manali, HP',                  pricePerNight:5500, rating:4.7, availableRooms:10},
+    ],
+    'Jaipur':     [
+      {hotelId:107, hotelName:'Rajputana Palace',       address:'MI Road, Jaipur',             pricePerNight:4000, rating:4.8, availableRooms:5},
+      {hotelId:108, hotelName:'Hotel Pearl Palace',     address:'Hathroi Fort, Jaipur',        pricePerNight:1800, rating:4.5, availableRooms:12},
+      {hotelId:109, hotelName:'Rambagh Palace',         address:'Bhawani Singh Road, Jaipur',  pricePerNight:18000,rating:5.0, availableRooms:3},
+    ],
+    'Kerala':     [
+      {hotelId:110, hotelName:'Backwater Bliss',        address:'Alleppey, Kerala',            pricePerNight:2800, rating:4.3, availableRooms:6},
+      {hotelId:111, hotelName:'Zostel Kochi',           address:'Fort Kochi, Kerala',          pricePerNight:950,  rating:4.4, availableRooms:22},
+      {hotelId:112, hotelName:'Kumarakom Lake Resort',  address:'Kumarakom, Kerala',           pricePerNight:9800, rating:4.9, availableRooms:4},
+    ],
+    'Ladakh':     [
+      {hotelId:113, hotelName:'Himalayan Camp',         address:'Leh, Ladakh',                 pricePerNight:3200, rating:4.6, availableRooms:4},
+      {hotelId:114, hotelName:'Zostel Leh',             address:'Leh Market, Ladakh',          pricePerNight:1100, rating:4.3, availableRooms:20},
+      {hotelId:115, hotelName:'Chamba Camp Thiksey',    address:'Thiksey, Ladakh',             pricePerNight:8200, rating:4.9, availableRooms:5},
+    ],
+    'Udaipur':    [
+      {hotelId:116, hotelName:'Hotel Badi Haveli',      address:'City Palace Road, Udaipur',   pricePerNight:2400, rating:4.3, availableRooms:18},
+      {hotelId:117, hotelName:'Zostel Udaipur',         address:'Gangaur Ghat, Udaipur',       pricePerNight:850,  rating:4.2, availableRooms:24},
+      {hotelId:118, hotelName:'Taj Lake Palace',        address:'Pichola Lake, Udaipur',       pricePerNight:28000,rating:5.0, availableRooms:5},
+    ],
+    'Rishikesh':  [
+      {hotelId:119, hotelName:'Zostel Rishikesh',       address:'Swarg Ashram, Rishikesh',     pricePerNight:750,  rating:4.4, availableRooms:28},
+      {hotelId:120, hotelName:'Aloha on the Ganges',    address:'Rishikesh Road',              pricePerNight:4500, rating:4.6, availableRooms:14},
+      {hotelId:121, hotelName:'Ananda in the Himalayas',address:'Narendra Nagar, Rishikesh',   pricePerNight:22000,rating:5.0, availableRooms:6},
+    ],
+    'Darjeeling': [
+      {hotelId:122, hotelName:'Zostel Darjeeling',      address:'Gandhi Road, Darjeeling',     pricePerNight:780,  rating:4.3, availableRooms:20},
+      {hotelId:123, hotelName:'The Elgin Darjeeling',   address:'HD Lama Road, Darjeeling',    pricePerNight:6500, rating:4.7, availableRooms:8},
+      {hotelId:124, hotelName:'Glenburn Tea Estate',    address:'Glenburn, Darjeeling',        pricePerNight:14500,rating:4.9, availableRooms:4},
+    ],
+    'Shimla':     [
+      {hotelId:125, hotelName:'Zostel Shimla',          address:'The Ridge, Shimla',           pricePerNight:820,  rating:4.2, availableRooms:22},
+      {hotelId:126, hotelName:'The Cecil Shimla',       address:'Chaura Maidan, Shimla',       pricePerNight:7500, rating:4.7, availableRooms:10},
+      {hotelId:127, hotelName:'Wildflower Hall',        address:'Chharabra, Shimla',           pricePerNight:12000,rating:4.9, availableRooms:8},
+    ],
+    'Varanasi':   [
+      {hotelId:128, hotelName:'Hotel Ganges View',      address:'Assi Ghat, Varanasi',         pricePerNight:2800, rating:4.2, availableRooms:18},
+      {hotelId:129, hotelName:'Zostel Varanasi',        address:'Assi Ghat, Varanasi',         pricePerNight:700,  rating:4.3, availableRooms:25},
+      {hotelId:130, hotelName:'Brijrama Palace',        address:'Darbhanga Ghat, Varanasi',    pricePerNight:9500, rating:4.8, availableRooms:7},
+    ],
+    'Agra':       [
+      {hotelId:131, hotelName:'Hotel Taj Resorts',      address:'Fatehabad Road, Agra',        pricePerNight:2200, rating:4.0, availableRooms:25},
+      {hotelId:132, hotelName:'Zostel Agra',            address:'Taj Nagari, Agra',            pricePerNight:680,  rating:4.1, availableRooms:22},
+      {hotelId:133, hotelName:'Oberoi Amarvilas',       address:'Taj East Gate Road, Agra',    pricePerNight:38000,rating:5.0, availableRooms:5},
+    ],
+    'Coorg':      [
+      {hotelId:134, hotelName:'Orange County Resort',   address:'Siddapur, Coorg',             pricePerNight:6800, rating:4.5, availableRooms:14},
+      {hotelId:135, hotelName:'Zostel Coorg',           address:'Madikeri, Coorg',             pricePerNight:820,  rating:4.2, availableRooms:20},
+      {hotelId:136, hotelName:'Evolve Back Coorg',      address:'Kakkabe, Coorg',              pricePerNight:18000,rating:4.9, availableRooms:6},
+    ],
+    'Ooty':       [
+      {hotelId:137, hotelName:'The Monarch Hotel Ooty', address:'Commercial Road, Ooty',       pricePerNight:2200, rating:4.0, availableRooms:20},
+      {hotelId:138, hotelName:'Zostel Ooty',            address:'Charing Cross, Ooty',         pricePerNight:760,  rating:4.1, availableRooms:18},
+      {hotelId:139, hotelName:'Taj Savoy Hotel Ooty',   address:'Sylks Road, Ooty',            pricePerNight:7500, rating:4.7, availableRooms:8},
+    ],
+    'Mysore':     [
+      {hotelId:140, hotelName:'Radisson Blu Mysore',    address:'New Sayyaji Rao Road, Mysore',pricePerNight:6500, rating:4.6, availableRooms:15},
+      {hotelId:141, hotelName:'Zostel Mysore',          address:'Shivarampet, Mysore',         pricePerNight:750,  rating:4.3, availableRooms:22},
+      {hotelId:142, hotelName:'Lalitha Mahal Palace',   address:'T Narasipura Road, Mysore',   pricePerNight:8500, rating:4.7, availableRooms:8},
+    ],
+    'Hampi':      [
+      {hotelId:143, hotelName:'Zostel Hampi',           address:'Virupapur Gadde, Hampi',      pricePerNight:680,  rating:4.5, availableRooms:26},
+      {hotelId:144, hotelName:'Hampi Boulders',         address:'Nagerhal, Hampi',             pricePerNight:4500, rating:4.6, availableRooms:6},
+      {hotelId:145, hotelName:'Evolve Back Hampi',      address:'Kamalapura, Hampi',           pricePerNight:16000,rating:4.9, availableRooms:8},
+    ],
+  };
+
   const FALLBACK_PKG = [
     { packageId:1, packageName:'Goa Sunshine Package',  destination:{city:'Goa'},   totalCost:15000, durationDays:4, description:'Beach resort, water sports, and nightlife.', maxPeople:4 },
     { packageId:2, packageName:'Manali Snow Escape',    destination:{city:'Manali'}, totalCost:12000, durationDays:5, description:'Snow peaks, trekking, and cozy stays.', maxPeople:2 },
@@ -744,7 +841,8 @@
       const data = await r.json();
       const seen = new Set();
       state.allDests = data.filter(d => { if(seen.has(d.city)) return false; seen.add(d.city); return true; });
-    } catch { state.allDests = []; }
+      if (!state.allDests.length) state.allDests = FALLBACK_DESTS;
+    } catch { state.allDests = FALLBACK_DESTS; }
     renderDestPicker();
   }
 
@@ -786,21 +884,34 @@
     try {
       const r = await fetch(`${API}/hotels/search?city=${encodeURIComponent(state.dest.city)}`);
       const hotels = await r.json();
-      if (!hotels.length) { list.innerHTML = '<p class="no-data">No hotels found for this destination.</p>'; return; }
-      list.innerHTML = hotels.map((h,i) => `
-        <div class="select-card" id="hc-${h.hotelId}" onclick="selectHotel(${h.hotelId},'${h.hotelName}',${h.pricePerNight})">
-          <img class="select-card-img" src="${HOTEL_IMGS[i%HOTEL_IMGS.length]}" alt="${h.hotelName}"
-            onerror="this.style.background='var(--gray3)'"/>
-          <div class="sc-info">
-            <h4>${h.hotelName}</h4>
-            <p>${h.address || state.dest.city}</p>
-            <span class="sc-badge">★ ${h.rating}  ·  ${h.availableRooms} rooms left</span>
-          </div>
-          <div>
-            <div class="sc-price">₹${Number(h.pricePerNight).toLocaleString('en-IN')}<small>/night</small></div>
-          </div>
-        </div>`).join('');
-    } catch { list.innerHTML = '<p class="no-data">Could not load hotels.</p>'; }
+      if (!hotels.length) {
+        const fallback = FALLBACK_HOTELS[state.dest.city] || [];
+        if (!fallback.length) { list.innerHTML = '<p class="no-data">No hotels found for this destination.</p>'; return; }
+        renderHotels(fallback); return;
+      }
+      renderHotels(hotels);
+    } catch {
+      const fallback = FALLBACK_HOTELS[state.dest.city] || [];
+      if (!fallback.length) { list.innerHTML = '<p class="no-data">Could not load hotels.</p>'; return; }
+      renderHotels(fallback);
+    }
+  }
+
+  function renderHotels(hotels) {
+    const list = document.getElementById('hotelList');
+    list.innerHTML = hotels.map((h,i) => `
+      <div class="select-card" id="hc-${h.hotelId}" onclick="selectHotel(${h.hotelId},'${h.hotelName}',${h.pricePerNight})">
+        <img class="select-card-img" src="${HOTEL_IMGS[i%HOTEL_IMGS.length]}" alt="${h.hotelName}"
+          onerror="this.style.background='var(--gray3)'"/>
+        <div class="sc-info">
+          <h4>${h.hotelName}</h4>
+          <p>${h.address || state.dest.city}</p>
+          <span class="sc-badge">★ ${h.rating}  ·  ${h.availableRooms} rooms left</span>
+        </div>
+        <div>
+          <div class="sc-price">₹${Number(h.pricePerNight).toLocaleString('en-IN')}<small>/night</small></div>
+        </div>
+      </div>`).join('');
   }
 
   function selectHotel(id, name, price) {
@@ -851,9 +962,10 @@
     const hotelTotal = (state.hotel?.pricePerNight||0) * nights * state.numPeople;
     const transTotal = (state.transport?.fare||0) * state.numPeople;
     const grand = hotelTotal + transTotal;
-    const names = {1:'Ashmika Jain',2:'Aakankshya Dash',3:'Kavya Srivastava'};
+    const wwUser = (() => { try { return JSON.parse(localStorage.getItem('ww_user')); } catch { return null; } })();
+    const travName = wwUser ? wwUser.name : 'Guest';
     document.getElementById('reviewBox').innerHTML = `
-      <div class="review-row"><span class="rl">Traveller</span><span class="rv">${names[state.userId]}</span></div>
+      <div class="review-row"><span class="rl">Traveller</span><span class="rv">${travName}</span></div>
       <div class="review-row"><span class="rl">Destination</span><span class="rv">${state.dest?.city}, India</span></div>
       <div class="review-row"><span class="rl">Dates</span><span class="rv">${fmtDate(state.checkIn)} → ${fmtDate(state.checkOut)} (${nights} nights)</span></div>
       <div class="review-row"><span class="rl">Guests</span><span class="rv">${state.numPeople} person${state.numPeople>1?'s':''}</span></div>
@@ -880,8 +992,14 @@
           checkOut: state.checkOut, numPeople: state.numPeople
         })
       });
-      if (res.ok) showSuccess();
-      else { const d = await res.json(); showToast('Booking failed: '+(d.message||'Error')); }
+      const d = await res.json();
+      if (res.ok) {
+        state.bookingId = d.bookingId;
+        state.totalAmount = d.totalAmount;
+        goToPayment();
+      } else {
+        showToast('Booking failed: '+(d.message||'Error'));
+      }
     } catch { showToast('Cannot connect to backend.'); }
   }
 
@@ -894,6 +1012,35 @@
     document.getElementById('checkIn').value = '';
     document.getElementById('checkOut').value = '';
     updateProgress(1);
+  }
+
+  function goToPayment() {
+    // Store booking data in session storage for payment page
+    const bookingData = {
+      bookingId: state.bookingId || 1,
+      amount: state.totalAmount || calculateTotal(),
+      destination: state.dest?.city || 'Unknown',
+      checkIn: state.checkIn,
+      checkOut: state.checkOut,
+      numPeople: state.numPeople
+    };
+    sessionStorage.setItem('bookingData', JSON.stringify(bookingData));
+    // Redirect to payment page with booking info
+    window.location.href = `payment.html?bookingId=${bookingData.bookingId}&amount=${bookingData.amount}`;
+  }
+
+  function calculateTotal() {
+    let total = 0;
+    if (state.hotel) total += state.hotel.pricePerNight * state.numPeople * (getDaysDifference() || 1);
+    if (state.transport) total += state.transport.fare;
+    return total;
+  }
+
+  function getDaysDifference() {
+    if (!state.checkIn || !state.checkOut) return 0;
+    const checkIn = new Date(state.checkIn);
+    const checkOut = new Date(state.checkOut);
+    return Math.max(1, Math.floor((checkOut - checkIn) / (1000 * 60 * 60 * 24)));
   }
 
   /* ── Packages ── */
@@ -1007,5 +1154,32 @@
 </style>
 <script src="animations.js"></script>
 <script src="chatbot.js"></script>
+<script>
+  /* ── AUTH INIT ── */
+  (function() {
+    const AUTH_KEY = 'ww_user';
+    let wwUser = null;
+    try { wwUser = JSON.parse(localStorage.getItem(AUTH_KEY)); } catch {}
+
+    // Redirect to home if not logged in
+    if (!wwUser) {
+      alert('Please sign in to use the Trip Planner.');
+      window.location = 'index.html';
+      return;
+    }
+
+    // Set userId hidden input
+    document.getElementById('userId').value = wwUser.userId;
+    document.getElementById('userDisplay').textContent = wwUser.name + ' (' + wwUser.email + ')';
+
+    // Update nav
+    const area = document.getElementById('navAuthArea');
+    if (area) {
+      area.innerHTML = `
+        <span style="font-size:0.82rem;font-weight:600;color:var(--black);margin-right:4px;">Hi, ${wwUser.name.split(' ')[0]}</span>
+        <button class="nav-btn" onclick="localStorage.removeItem('ww_user');window.location='index.html'">Logout</button>`;
+    }
+  })();
+</script>
 </body>
 </html>

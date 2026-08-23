@@ -109,7 +109,7 @@ spring.datasource.password=YOUR_MYSQL_PASSWORD
 ### 3. Start Backend
 ```bash
 cd backend
-mvnw spring-boot:run
+mvn spring-boot:run
 ```
 Backend runs at `http://localhost:8080`
 

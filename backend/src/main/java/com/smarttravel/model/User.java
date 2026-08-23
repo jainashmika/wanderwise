@@ -1,5 +1,6 @@
 package com.smarttravel.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -20,6 +21,7 @@ public class User {
     private String email;
 
     // We store HASHED password, never plain text
+    @JsonIgnore
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 

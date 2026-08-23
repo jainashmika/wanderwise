@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Payment · WanderWise</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pink:    #0CD4DE;
+      --purple:  #0096C7;
+      --black:   #1D1D1F;
+      --gray1:   #6E6E73;
+      --gray2:   #F0FAFA;
+      --white:   #FFFFFF;
+      --success: #10B981;
+      --error:   #EF4444;
+      --grad:    linear-gradient(135deg, #0CD4DE, #0096C7);
+      --radius:  14px;
+      --shadow:  0 4px 24px rgba(0,0,0,0.07);
+      --shadow-hover: 0 16px 48px rgba(12,212,222,0.18);
+    }
+
+    html { scroll-behavior: smooth; }
+    body { 
+      font-family: 'Inter', -apple-system, sans-serif; 
+      background: var(--gray2); 
+      color: var(--black); 
+      -webkit-font-smoothing: antialiased;
+      margin-top: 68px;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      height: 68px; display: flex; align-items: center;
+      justify-content: space-between; padding: 0 48px;
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+    .nav-logo { font-size: 1.2rem; font-weight: 800; text-decoration: none; color: var(--black); }
+    .nav-logo span { color: var(--pink); }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a { font-size: 0.85rem; font-weight: 500; color: var(--gray1); text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--black); }
+
+    /* ── CONTAINER ── */
+    .container {
+      max-width: 900px; margin: 0 auto; padding: 48px 24px;
+    }
+
+    /* ── HEADER ── */
+    .page-header {
+      text-align: center; margin-bottom: 48px;
+    }
+    .page-header h1 {
+      font-size: 2.5rem; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.8px;
+    }
+    .page-header p {
+      font-size: 1rem; color: var(--gray1);
+    }
+
+    /* ── PAYMENT CONTAINER ── */
+    .payment-wrapper {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 36px;
+    }
+
+    .payment-section {
+      background: var(--white); border-radius: var(--radius);
+      padding: 36px; box-shadow: var(--shadow);
+    }
+
+    .payment-section h2 {
+      font-size: 1.3rem; font-weight: 700; margin-bottom: 24px; color: var(--black);
+    }
+
+    /* ── FORM SECTION ── */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 8px;
+      color: var(--black);
+    }
+
+    input, select {
+      width: 100%; padding: 12px 14px; border: 1px solid #E5E7EB;
+      border-radius: 8px; font-family: 'Inter', sans-serif;
+      font-size: 0.95rem; transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus {
+      outline: none; border-color: var(--pink); box-shadow: 0 0 0 3px rgba(12,212,222,0.1);
+    }
+
+    /* ── PAYMENT METHOD ── */
+    .payment-methods {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px;
+    }
+
+    .method-option {
+      position: relative;
+    }
+
+    .method-option input[type="radio"] {
+      display: none;
+    }
+
+    .method-label {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px; border: 2px solid #E5E7EB; border-radius: 8px;
+      cursor: pointer; transition: all 0.2s;
+      background: var(--white);
+    }
+
+    .method-option input[type="radio"]:checked + .method-label {
+      border-color: var(--pink); background: rgba(12,212,222,0.05);
+    }
+
+    .method-icon {
+      font-size: 1.2rem;
+    }
+
+    .method-text {
+      font-size: 0.85rem; font-weight: 600;
+    }
+
+    /* ── ORDER SUMMARY ── */
+    .order-summary {
+      background: linear-gradient(135deg, rgba(12,212,222,0.05), rgba(0,150,199,0.05));
+      border-radius: var(--radius); padding: 24px;
+    }
+
+    .summary-row {
+      display: flex; justify-content: space-between; margin-bottom: 12px;
+      font-size: 0.95rem;
+    }
+
+    .summary-row.total {
+      border-top: 2px solid rgba(0,0,0,0.1); padding-top: 12px; margin-top: 12px;
+      font-weight: 700; font-size: 1.1rem;
+    }
+
+    .summary-label { color: var(--gray1); }
+    .summary-value { font-weight: 600; }
+
+    /* ── BUTTON ── */
+    .btn-pay {
+      width: 100%; padding: 14px; margin-top: 24px;
+      background: var(--grad); color: var(--white);
+      border: none; border-radius: 8px; font-family: 'Inter', sans-serif;
+      font-size: 1rem; font-weight: 700; cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s; letter-spacing: -0.3px;
+    }
+
+    .btn-pay:hover {
+      opacity: 0.9; transform: translateY(-2px); box-shadow: var(--shadow-hover);
+    }
+
+    .btn-pay:disabled {
+      opacity: 0.5; cursor: not-allowed; transform: none;
+    }
+
+    /* ── LOADING ── */
+    .loading {
+      display: inline-block; width: 20px; height: 20px; margin-right: 8px;
+      border: 3px solid rgba(255,255,255,0.3); border-top-color: var(--white);
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── ALERTS ── */
+    .alert {
+      padding: 14px 16px; border-radius: 8px; margin-bottom: 20px;
+      font-size: 0.9rem; font-weight: 500; display: none;
+    }
+
+    .alert.success {
+      background: rgba(16,185,129,0.1); color: var(--success); border: 1px solid var(--success);
+      display: block;
+    }
+
+    .alert.error {
+      background: rgba(239,68,68,0.1); color: var(--error); border: 1px solid var(--error);
+      display: block;
+    }
+
+    /* ── TRANSACTION DETAILS ── */
+    .transaction-success {
+      text-align: center;
+    }
+
+    .success-icon {
+      width: 64px; height: 64px; background: var(--success); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;
+      color: var(--white); font-size: 2rem;
+    }
+
+    .success-text h3 {
+      font-size: 1.3rem; margin-bottom: 8px; color: var(--black);
+    }
+
+    .success-text p {
+      color: var(--gray1); margin-bottom: 20px;
+    }
+
+    .transaction-id {
+      background: var(--gray2); padding: 12px; border-radius: 8px;
+      font-family: 'Courier New', monospace; font-size: 0.85rem;
+      word-break: break-all; margin: 16px 0;
+    }
+
+    .btn-back {
+      background: var(--black); color: var(--white);
+      padding: 10px 20px; border: none; border-radius: 8px;
+      cursor: pointer; font-weight: 600; transition: background 0.2s;
+      margin-top: 16px;
+    }
+
+    .btn-back:hover { background: var(--gray1); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .payment-wrapper { grid-template-columns: 1fr; }
+      .page-header h1 { font-size: 1.8rem; }
+      .nav-links { gap: 16px; }
+      .container { padding: 24px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="index.html" class="nav-logo">Wander<span>Wise</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="destination.html">Destinations</a></li>
+      <li><a href="planner.html">Planner</a></li>
+      <li><a href="payment.html">Payment</a></li>
+    </ul>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="page-header">
+      <h1>Secure Payment</h1>
+      <p>Complete your booking with a quick and secure payment</p>
+    </div>
+
+    <div class="payment-wrapper">
+      <!-- Payment Form -->
+      <div class="payment-section">
+        <h2>Payment Details</h2>
+
+        <!-- Alert Messages -->
+        <div id="alert" class="alert"></div>
+
+        <form id="paymentForm">
+          <!-- Booking ID -->
+          <div class="form-group">
+            <label for="bookingId">Booking ID</label>
+            <input type="number" id="bookingId" placeholder="Enter your booking ID" required>
+            <small style="color: var(--gray1); font-size: 0.8rem; display: block; margin-top: 4px;">
+              You'll find this in your booking confirmation email
+            </small>
+          </div>
+
+          <!-- Amount -->
+          <div class="form-group">
+            <label for="amount">Amount to Pay (₹)</label>
+            <input type="number" id="amount" placeholder="0.00" step="0.01" required>
+          </div>
+
+          <!-- Payment Method -->
+          <div class="form-group">
+            <label>Payment Method</label>
+            <div class="payment-methods">
+              <div class="method-option">
+                <input type="radio" id="credit" name="paymentMethod" value="Credit_Card" required>
+                <label for="credit" class="method-label">
+                  <span class="method-icon">💳</span>
+                  <span class="method-text">Credit Card</span>
+                </label>
+              </div>
+
+              <div class="method-option">
+                <input type="radio" id="debit" name="paymentMethod" value="Debit_Card">
+                <label for="debit" class="method-label">
+                  <span class="method-icon">🏦</span>
+                  <span class="method-text">Debit Card</span>
+                </label>
+              </div>
+
+              <div class="method-option">
+                <input type="radio" id="upi" name="paymentMethod" value="UPI">
+                <label for="upi" class="method-label">
+                  <span class="method-icon">📱</span>
+                  <span class="method-text">UPI</span>
+                </label>
+              </div>
+
+              <div class="method-option">
+                <input type="radio" id="netbanking" name="paymentMethod" value="Net_Banking">
+                <label for="netbanking" class="method-label">
+                  <span class="method-icon">🌐</span>
+                  <span class="method-text">Net Banking</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cardholder Name -->
+          <div class="form-group">
+            <label for="cardName">Cardholder Name</label>
+            <input type="text" id="cardName" placeholder="Full name as on card" required>
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" placeholder="your@email.com" required>
+          </div>
+
+          <!-- Terms -->
+          <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" id="terms" style="width: auto;" required>
+            <label for="terms" style="margin: 0;">I agree to the terms and conditions</label>
+          </div>
+
+          <button type="submit" class="btn-pay" id="submitBtn">Pay Now</button>
+        </form>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="payment-section">
+        <h2>Order Summary</h2>
+
+        <div id="summaryContent">
+          <div class="order-summary">
+            <div class="summary-row">
+              <span class="summary-label">Trip Cost</span>
+              <span class="summary-value">₹ <span id="tripCost">0</span></span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-label">Taxes & Fees</span>
+              <span class="summary-value">₹ <span id="taxes">0</span></span>
+            </div>
+            <div class="summary-row total">
+              <span class="summary-label">Total Amount</span>
+              <span class="summary-value">₹ <span id="totalAmount">0</span></span>
+            </div>
+          </div>
+
+          <div style="margin-top: 24px; padding: 16px; background: rgba(12,212,222,0.05); border-radius: 8px;">
+            <p style="font-size: 0.85rem; color: var(--gray1); margin-bottom: 8px;">
+              <strong>Payment Security:</strong>
+            </p>
+            <p style="font-size: 0.8rem; color: var(--gray1); line-height: 1.5;">
+              ✓ SSL Encrypted <br>
+              ✓ PCI DSS Compliant <br>
+              ✓ Secure Gateway Processing
+            </p>
+          </div>
+        </div>
+
+        <!-- Success State -->
+        <div id="successContent" style="display: none;">
+          <div class="transaction-success">
+            <div class="success-icon">✓</div>
+            <div class="success-text">
+              <h3>Payment Successful!</h3>
+              <p>Your booking has been confirmed</p>
+            </div>
+
+            <div style="background: var(--gray2); padding: 16px; border-radius: 8px; margin: 20px 0;">
+              <p style="font-size: 0.8rem; color: var(--gray1); margin-bottom: 8px;">Transaction ID</p>
+              <div class="transaction-id" id="transactionId">-</div>
+            </div>
+
+            <div style="background: var(--gray2); padding: 16px; border-radius: 8px;">
+              <p style="font-size: 0.8rem; color: var(--gray1); margin-bottom: 8px;">Amount Paid</p>
+              <p style="font-size: 1.2rem; font-weight: 700;">₹ <span id="paidAmount">0</span></p>
+            </div>
+
+            <a href="planner.html" class="btn-back">Back to Planner</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load animations and payment script -->
+  <script src="animations.js"></script>
+  <script src="payment.js"></script>
+
+</body>
+</html>

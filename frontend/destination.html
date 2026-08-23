@@ -380,10 +380,13 @@
   <a class="nav-logo" href="index.html">WanderWise</a>
   <ul class="nav-links">
     <li><a href="index.html">Home</a></li>
+    <li><a href="destination.html">Destinations</a></li>
     <li><a href="planner.html">Plan a Trip</a></li>
-    <li><a href="index.html#destinations">Destinations</a></li>
+    <li><a href="payment.html">Payment</a></li>
   </ul>
-  <a class="nav-cta" href="planner.html">Book Now</a>
+  <div id="navAuthArea">
+    <a class="nav-cta" href="planner.html">Book Now</a>
+  </div>
 </nav>
 
 <!-- HERO -->
@@ -1140,5 +1143,19 @@ init();
 </style>
 <script src="animations.js"></script>
 <script src="chatbot.js"></script>
+<script>
+  (function() {
+    let wwUser = null;
+    try { wwUser = JSON.parse(localStorage.getItem('ww_user')); } catch {}
+    const area = document.getElementById('navAuthArea');
+    if (!area) return;
+    if (wwUser) {
+      area.innerHTML = `
+        <span style="font-size:0.82rem;font-weight:600;margin-right:6px;">Hi, ${wwUser.name.split(' ')[0]}</span>
+        <a class="nav-cta" href="planner.html">Book Now</a>
+        <button class="nav-cta" style="margin-left:6px;" onclick="localStorage.removeItem('ww_user');window.location='index.html'">Logout</button>`;
+    }
+  })();
+</script>
 </body>
 </html>

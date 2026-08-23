@@ -23,12 +23,12 @@ public class BookingService {
     // ---------- CREATE BOOKING ----------
     // @Transactional: if anything fails, the whole operation rolls back (ACID)
     @Transactional
-    public String createBooking(Integer userId, Integer hotelId, Integer transportId,
+    public Booking createBooking(Integer userId, Integer hotelId, Integer transportId,
                                 Integer packageId, LocalDate checkIn, LocalDate checkOut,
                                 Integer numPeople) {
 
         Optional<User> userOpt = userRepository.findById(userId);
-        if (userOpt.isEmpty()) return "USER_NOT_FOUND";
+        if (userOpt.isEmpty()) throw new IllegalArgumentException("USER_NOT_FOUND");
 
         Booking booking = new Booking();
         booking.setUser(userOpt.get());
@@ -71,8 +71,12 @@ public class BookingService {
         }
 
         booking.setTotalAmount(total);
-        bookingRepository.save(booking);
-        return "BOOKING_CONFIRMED";
+        return bookingRepository.save(booking);
+    }
+
+    // ---------- GET ALL BOOKINGS ----------
+    public List<Booking> getAllBookings() {
+        return bookingRepository.findAll();
     }
 
     // ---------- GET BOOKINGS FOR USER ----------

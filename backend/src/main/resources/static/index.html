@@ -3,18 +3,20 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>WanderWise — Travel India</title>
+  <title>WanderWise  -  Travel India</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --black:   #1D1D1F;
-      --gray1:   #6E6E73;
-      --gray2:   #F5F5F7;
-      --gray3:   #E8E8ED;
+      --black:   #0A2540;
+      --gray1:   #4B6B7A;
+      --gray2:   #F0FAFA;
+      --gray3:   #D6F2F5;
       --white:   #FFFFFF;
-      --accent:  #E91E8C;
+      --accent:  #0CD4DE;
+      --accent2: #0096C7;
+      --grad:    linear-gradient(135deg, #0CD4DE, #0096C7);
       --radius:  16px;
       --nav-h:   68px;
     }
@@ -554,7 +556,7 @@
 
     @media (max-width: 900px) {
       nav { padding: 0 24px; }
-      .nav-links { display: none; }
+      .nav-links { display: flex; gap: 16px; }
       .section { padding: 72px 24px; }
       .dest-grid { grid-template-columns: 1fr; grid-template-rows: auto; }
       .dest-card.span2 { grid-column: span 1; }
@@ -576,13 +578,44 @@
 <nav>
   <a class="nav-logo" href="index.html">Wander<span>Wise</span></a>
   <ul class="nav-links">
-    <li><a href="#destinations">Destinations</a></li>
+    <li><a href="destination.html">Destinations</a></li>
     <li><a href="#packages">Packages</a></li>
     <li><a href="#how">How It Works</a></li>
     <li><a href="planner.html">Plan</a></li>
+    <li><a href="payment.html">Payment</a></li>
   </ul>
-  <button class="nav-cta" onclick="window.location='planner.html'">Start Planning</button>
+  <div id="navAuthArea">
+    <button class="nav-cta" id="navAuthBtn" onclick="openAuthModal()">Sign In</button>
+  </div>
 </nav>
+
+<!-- AUTH MODAL -->
+<div id="authModal" style="display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);align-items:center;justify-content:center;" onclick="if(event.target===this)closeAuthModal()">
+  <div style="background:#fff;border-radius:20px;padding:40px 36px;width:100%;max-width:420px;position:relative;box-shadow:0 24px 80px rgba(0,0,0,0.2);">
+    <button onclick="closeAuthModal()" style="position:absolute;top:16px;right:20px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#6E6E73;">×</button>
+    <div style="display:flex;gap:0;margin-bottom:28px;border:1px solid #e5e5e5;border-radius:980px;padding:4px;">
+      <button id="tabLogin"  onclick="switchTab('login')"    style="flex:1;padding:9px;border-radius:980px;border:none;cursor:pointer;font-weight:600;font-size:0.85rem;background:#0A2540;color:#fff;transition:all 0.2s;">Sign In</button>
+      <button id="tabReg"    onclick="switchTab('register')" style="flex:1;padding:9px;border-radius:980px;border:none;cursor:pointer;font-weight:600;font-size:0.85rem;background:none;color:#6E6E73;transition:all 0.2s;">Register</button>
+    </div>
+    <!-- Login form -->
+    <div id="formLogin">
+      <div style="margin-bottom:16px;"><label style="font-size:0.8rem;font-weight:600;color:#4B6B7A;display:block;margin-bottom:6px;">Email</label><input id="liEmail" type="email" placeholder="you@email.com" style="width:100%;padding:11px 14px;border:1.5px solid #e5e5e5;border-radius:10px;font-size:0.9rem;outline:none;font-family:inherit;" onfocus="this.style.borderColor='#0CD4DE'" onblur="this.style.borderColor='#e5e5e5'"/></div>
+      <div style="margin-bottom:24px;"><label style="font-size:0.8rem;font-weight:600;color:#4B6B7A;display:block;margin-bottom:6px;">Password</label><input id="liPass" type="password" placeholder="••••••••" style="width:100%;padding:11px 14px;border:1.5px solid #e5e5e5;border-radius:10px;font-size:0.9rem;outline:none;font-family:inherit;" onfocus="this.style.borderColor='#0CD4DE'" onblur="this.style.borderColor='#e5e5e5'"/></div>
+      <button onclick="doLogin()" style="width:100%;padding:13px;border-radius:980px;background:linear-gradient(135deg,#0CD4DE,#0096C7);color:#fff;border:none;font-size:0.95rem;font-weight:700;cursor:pointer;letter-spacing:-0.2px;">Sign In</button>
+      <p id="liErr" style="color:#e53935;font-size:0.82rem;margin-top:10px;text-align:center;display:none;"></p>
+    </div>
+    <!-- Register form -->
+    <div id="formReg" style="display:none">
+      <div style="margin-bottom:14px;"><label style="font-size:0.8rem;font-weight:600;color:#4B6B7A;display:block;margin-bottom:6px;">Full Name</label><input id="reName" type="text" placeholder="Ashmika Jain" style="width:100%;padding:11px 14px;border:1.5px solid #e5e5e5;border-radius:10px;font-size:0.9rem;outline:none;font-family:inherit;" onfocus="this.style.borderColor='#0CD4DE'" onblur="this.style.borderColor='#e5e5e5'"/></div>
+      <div style="margin-bottom:14px;"><label style="font-size:0.8rem;font-weight:600;color:#4B6B7A;display:block;margin-bottom:6px;">Email</label><input id="reEmail" type="email" placeholder="you@email.com" style="width:100%;padding:11px 14px;border:1.5px solid #e5e5e5;border-radius:10px;font-size:0.9rem;outline:none;font-family:inherit;" onfocus="this.style.borderColor='#0CD4DE'" onblur="this.style.borderColor='#e5e5e5'"/></div>
+      <div style="margin-bottom:14px;"><label style="font-size:0.8rem;font-weight:600;color:#4B6B7A;display:block;margin-bottom:6px;">Phone</label><input id="rePhone" type="tel" placeholder="9876543210" style="width:100%;padding:11px 14px;border:1.5px solid #e5e5e5;border-radius:10px;font-size:0.9rem;outline:none;font-family:inherit;" onfocus="this.style.borderColor='#0CD4DE'" onblur="this.style.borderColor='#e5e5e5'"/></div>
+      <div style="margin-bottom:24px;"><label style="font-size:0.8rem;font-weight:600;color:#4B6B7A;display:block;margin-bottom:6px;">Password</label><input id="rePass" type="password" placeholder="••••••••" style="width:100%;padding:11px 14px;border:1.5px solid #e5e5e5;border-radius:10px;font-size:0.9rem;outline:none;font-family:inherit;" onfocus="this.style.borderColor='#0CD4DE'" onblur="this.style.borderColor='#e5e5e5'"/></div>
+      <button onclick="doRegister()" style="width:100%;padding:13px;border-radius:980px;background:linear-gradient(135deg,#0CD4DE,#0096C7);color:#fff;border:none;font-size:0.95rem;font-weight:700;cursor:pointer;letter-spacing:-0.2px;">Create Account</button>
+      <p id="reErr" style="color:#e53935;font-size:0.82rem;margin-top:10px;text-align:center;display:none;"></p>
+    </div>
+  </div>
+</div>
+
 
 <!-- HERO -->
 <div class="hero">
@@ -593,10 +626,10 @@
   <div class="hero-overlay"></div>
   <div class="hero-content">
     <div class="hero-label">Smart Travel Planning for India</div>
-    <h1>Travel India,<br/>Your Way.</h1>
-    <p class="hero-sub">Discover breathtaking destinations, book curated hotels, and plan your perfect trip — all from one place.</p>
+    <h1>Travel <span id="typewriter-target"></span><br/>Your Way.</h1>
+    <p class="hero-sub">Discover breathtaking destinations, book curated hotels, and plan your perfect trip  -  all from one place.</p>
     <div class="hero-actions">
-      <button class="btn-white" onclick="window.location='planner.html'">Start Planning</button>
+      <button class="btn-white pulse-ring" onclick="goToPlanner()">Start Planning</button>
       <a class="btn-outline-white" href="#destinations">Explore Destinations</a>
     </div>
   </div>
@@ -608,20 +641,20 @@
 
 <!-- STAT STRIP -->
 <div class="stat-strip">
-  <div class="stat-cell">
-    <div class="stat-num" id="sDest">5</div>
+  <div class="stat-cell sr">
+    <div class="stat-num shimmer-text" data-count="5" data-suffix="+" id="sDest">5+</div>
     <div class="stat-lbl">Destinations</div>
   </div>
-  <div class="stat-cell">
-    <div class="stat-num" id="sPkg">5</div>
+  <div class="stat-cell sr" style="animation-delay:0.1s">
+    <div class="stat-num shimmer-text" data-count="35" data-suffix="+" id="sPkg">35+</div>
     <div class="stat-lbl">Curated Packages</div>
   </div>
-  <div class="stat-cell">
-    <div class="stat-num">5<span>+</span></div>
+  <div class="stat-cell sr" style="animation-delay:0.2s">
+    <div class="stat-num shimmer-text" data-count="30" data-suffix="+">30+</div>
     <div class="stat-lbl">Partner Hotels</div>
   </div>
-  <div class="stat-cell">
-    <div class="stat-num">100<span>%</span></div>
+  <div class="stat-cell sr" style="animation-delay:0.3s">
+    <div class="stat-num shimmer-text" data-count="100" data-suffix="%">100%</div>
     <div class="stat-lbl">Satisfaction</div>
   </div>
 </div>
@@ -630,8 +663,8 @@
 <section class="section" id="destinations">
   <div class="sec-head">
     <div>
-      <p class="sec-eyebrow reveal">Destinations</p>
-      <h2 class="sec-title reveal">Where do you<br/>want to go?</h2>
+      <p class="sec-eyebrow sr">Destinations</p>
+      <h2 class="sec-title sr grad-cycle">Where do you<br/>want to go?</h2>
     </div>
     <div>
       <div class="dest-search" id="destFilters">
@@ -659,7 +692,7 @@
     <div>
       <p class="sec-eyebrow reveal">Packages</p>
       <h2 class="sec-title reveal">Complete trips,<br/>one great price.</h2>
-      <p class="sec-sub reveal">Hotel, transport, and top spots — bundled and ready.</p>
+      <p class="sec-sub reveal">Hotel, transport, and top spots  -  bundled and ready.</p>
     </div>
     <div style="display:flex;flex-direction:column;gap:12px;align-items:flex-end">
       <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
@@ -720,7 +753,7 @@
   <div class="feature-text-col">
     <p class="sec-eyebrow">Why WanderWise</p>
     <h2 class="sec-title">Travel smarter,<br/>not harder.</h2>
-    <p class="sec-sub" style="margin-top:12px">Every detail handled — from the moment you book to the moment you arrive. Transparent pricing, curated stays, and reliable transport in one seamless platform.</p>
+    <p class="sec-sub" style="margin-top:12px">Every detail handled  -  from the moment you book to the moment you arrive. Transparent pricing, curated stays, and reliable transport in one seamless platform.</p>
     <button class="btn-feature" onclick="window.location='planner.html'">Plan your trip →</button>
   </div>
 </div>
@@ -742,7 +775,7 @@
         <svg viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
         <svg viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
       </div>
-      <p class="test-quote">"WanderWise made our Goa trip completely effortless. Booked everything in one go — hotel, flight, even the beach tours. Genuinely the best travel experience."</p>
+      <p class="test-quote">"WanderWise made our Goa trip completely effortless. Booked everything in one go  -  hotel, flight, even the beach tours. Genuinely the best travel experience."</p>
       <div class="test-author">
         <div class="test-avatar">A</div>
         <div>
@@ -776,7 +809,7 @@
         <svg viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
         <svg viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
       </div>
-      <p class="test-quote">"Pangong Lake at sunrise is something you have to see to believe. The Ladakh Adventure package was perfectly planned — every detail was taken care of."</p>
+      <p class="test-quote">"Pangong Lake at sunrise is something you have to see to believe. The Ladakh Adventure package was perfectly planned  -  every detail was taken care of."</p>
       <div class="test-author">
         <div class="test-avatar">A</div>
         <div>
@@ -804,7 +837,7 @@
   <div class="footer-top">
     <div class="footer-brand">
       <span class="footer-brand-name">Wander<span>Wise</span></span>
-      <p>India's smart travel planning platform. Discover, plan, and book your perfect trip — all in one place.</p>
+      <p>India's smart travel planning platform. Discover, plan, and book your perfect trip  -  all in one place.</p>
     </div>
     <div class="footer-col">
       <h5>Destinations</h5>
@@ -843,24 +876,44 @@
 <button id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
 <script>
-  const API = '/api';
+  const API = 'http://localhost:8080/api';
 
   /* ── Destination data ── */
   const DEST = {
-    'Goa':    { tag:'beach',    img:'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=1200&q=80', fallback:'#0a2030' },
-    'Manali': { tag:'mountain adventure', img:'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=1200&q=80', fallback:'#0d1a2e' },
-    'Jaipur': { tag:'heritage', img:'https://images.unsplash.com/photo-1477587458883-47145ed6736c?auto=format&fit=crop&w=1200&q=80', fallback:'#2e1a00' },
-    'Kerala': { tag:'nature',   img:'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=1200&q=80', fallback:'#0a2e0a' },
-    'Ladakh': { tag:'adventure mountain', img:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1200&q=80', fallback:'#0d021a' },
+    'Goa':        { tag:'beach',             img:'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=1200&q=80',     fallback:'#0a2030' },
+    'Manali':     { tag:'mountain adventure',img:'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=1200&q=80',     fallback:'#0d1a2e' },
+    'Jaipur':     { tag:'heritage',          img:'https://images.unsplash.com/photo-1477587458883-47145ed94245?auto=format&fit=crop&w=1200&q=80',     fallback:'#2e1a00' },
+    'Kerala':     { tag:'nature',            img:'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=1200&q=80',     fallback:'#0a2e0a' },
+    'Ladakh':     { tag:'adventure mountain',img:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1200&q=80',     fallback:'#0d021a' },
+    'Udaipur':    { tag:'heritage lake',     img:'https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=1200&q=80',     fallback:'#1a1000' },
+    'Rishikesh':  { tag:'adventure spiritual',img:'https://images.unsplash.com/photo-1571401835393-8c5f35328320?auto=format&fit=crop&w=1200&q=80',   fallback:'#001a0d' },
+    'Darjeeling': { tag:'mountain tea',      img:'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80',       fallback:'#0a1a0a' },
+    'Shimla':     { tag:'mountain colonial', img:'https://images.unsplash.com/photo-1617195737496-bc30194e3a19?auto=format&fit=crop&w=1200&q=80',    fallback:'#0a1020' },
+    'Varanasi':   { tag:'spiritual culture', img:'https://images.unsplash.com/photo-1561361058-c24cecae35ca?auto=format&fit=crop&w=1200&q=80',       fallback:'#1a1000' },
+    'Agra':       { tag:'heritage mughal',   img:'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=1200&q=80',    fallback:'#1a1508' },
+    'Coorg':      { tag:'nature forest',     img:'https://images.unsplash.com/photo-1580477371194-5a66f42d5a37?auto=format&fit=crop&w=1200&q=80',    fallback:'#001a08' },
+    'Ooty':       { tag:'mountain nature',   img:'https://images.unsplash.com/photo-1617196034183-421b4040ed20?auto=format&fit=crop&w=1200&q=80',    fallback:'#0a1a10' },
+    'Mysore':     { tag:'heritage culture',  img:'https://images.unsplash.com/photo-1580227974546-cd5b9a09d2c5?auto=format&fit=crop&w=1200&q=80',    fallback:'#1a0a00' },
+    'Hampi':      { tag:'heritage ancient',  img:'https://images.unsplash.com/photo-1590157765408-3eb44fe86d24?auto=format&fit=crop&w=1200&q=80',    fallback:'#1a1000' },
   };
   function getDest(city) { return DEST[city] || { tag:'', img:'', fallback:'#1a1a1a' }; }
 
   const PKG_IMGS = {
-    'Goa':    'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
-    'Manali': 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80',
-    'Jaipur': 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=800&q=80',
-    'Kerala': 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=800&q=80',
-    'Ladakh': 'https://images.unsplash.com/photo-1571401835393-8c5f35328320?auto=format&fit=crop&w=800&q=80',
+    'Goa':        'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
+    'Manali':     'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80',
+    'Jaipur':     'https://images.unsplash.com/photo-1477587458883-47145ed94245?auto=format&fit=crop&w=800&q=80',
+    'Kerala':     'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=800&q=80',
+    'Ladakh':     'https://images.unsplash.com/photo-1571401835393-8c5f35328320?auto=format&fit=crop&w=800&q=80',
+    'Udaipur':    'https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=800&q=80',
+    'Rishikesh':  'https://images.unsplash.com/photo-1571401835393-8c5f35328320?auto=format&fit=crop&w=800&q=80',
+    'Darjeeling': 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=800&q=80',
+    'Shimla':     'https://images.unsplash.com/photo-1617195737496-bc30194e3a19?auto=format&fit=crop&w=800&q=80',
+    'Varanasi':   'https://images.unsplash.com/photo-1561361058-c24cecae35ca?auto=format&fit=crop&w=800&q=80',
+    'Agra':       'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=800&q=80',
+    'Coorg':      'https://images.unsplash.com/photo-1580477371194-5a66f42d5a37?auto=format&fit=crop&w=800&q=80',
+    'Ooty':       'https://images.unsplash.com/photo-1617196034183-421b4040ed20?auto=format&fit=crop&w=800&q=80',
+    'Mysore':     'https://images.unsplash.com/photo-1580227974546-cd5b9a09d2c5?auto=format&fit=crop&w=800&q=80',
+    'Hampi':      'https://images.unsplash.com/photo-1590157765408-3eb44fe86d24?auto=format&fit=crop&w=800&q=80',
   };
 
   const FALLBACK_PKG = [
@@ -1001,6 +1054,144 @@
   document.addEventListener('DOMContentLoaded', () => {
     loadDests(); loadPkgs(); triggerReveal();
   });
+</script>
+<style>
+  /* Extra vibrancy injected */
+  .dest-card { transition: transform 0.35s ease, box-shadow 0.35s ease !important; }
+  .dest-card:hover { box-shadow: 0 24px 60px rgba(255,45,120,0.25), 0 0 0 1px rgba(255,45,120,0.2) !important; }
+  .pkg-card  { transition: transform 0.35s ease, box-shadow 0.35s ease !important; }
+  .pkg-card:hover  { box-shadow: 0 20px 50px rgba(124,58,237,0.2) !important; }
+  .nav-logo { animation: gradCycle 6s ease infinite; }
+  .hero-label { animation: fadeInDown 1s ease 0.3s both; }
+  .hero h1   { animation: fadeInUp  1s ease 0.5s both; }
+  .hero-sub  { animation: fadeInUp  1s ease 0.7s both; }
+  .hero-actions { animation: fadeInUp 1s ease 0.9s both; }
+  @keyframes fadeInDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeInUp   { from{opacity:0;transform:translateY(24px)}  to{opacity:1;transform:translateY(0)} }
+  @keyframes gradCycle  { 0%,100%{background-position:0%} 50%{background-position:200%} }
+  .sec-eyebrow {
+    background:linear-gradient(135deg,#0CD4DE,#0096C7);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  }
+  .hero-scroll .scroll-line {
+    background: linear-gradient(to bottom, #0CD4DE, transparent) !important;
+  }
+  /* floating badge on hero */
+  .hero-label {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 50px;
+    padding: 6px 18px;
+  }
+</style>
+<script src="animations.js"></script>
+<script src="chatbot.js"></script>
+<script>
+  /* ── AUTH ── */
+  const AUTH_KEY = 'ww_user';
+
+  function getUser() {
+    try { return JSON.parse(localStorage.getItem(AUTH_KEY)); } catch { return null; }
+  }
+
+  function updateNavAuth() {
+    const user = getUser();
+    const area = document.getElementById('navAuthArea');
+    if (!area) return;
+    if (user) {
+      area.innerHTML = `
+        <span style="font-size:0.85rem;font-weight:600;color:var(--black);margin-right:8px;">Hi, ${user.name.split(' ')[0]}</span>
+        <button class="nav-cta" onclick="doLogout()">Logout</button>`;
+    } else {
+      area.innerHTML = `<button class="nav-cta" id="navAuthBtn" onclick="openAuthModal()">Sign In</button>`;
+    }
+  }
+
+  function openAuthModal() {
+    const m = document.getElementById('authModal');
+    m.style.display = 'flex';
+    switchTab('login');
+  }
+  function closeAuthModal() {
+    document.getElementById('authModal').style.display = 'none';
+  }
+  function switchTab(tab) {
+    document.getElementById('formLogin').style.display = tab === 'login' ? 'block' : 'none';
+    document.getElementById('formReg').style.display   = tab === 'register' ? 'block' : 'none';
+    document.getElementById('tabLogin').style.background = tab === 'login' ? '#0A2540' : 'none';
+    document.getElementById('tabLogin').style.color      = tab === 'login' ? '#fff' : '#6E6E73';
+    document.getElementById('tabReg').style.background   = tab === 'register' ? '#0A2540' : 'none';
+    document.getElementById('tabReg').style.color        = tab === 'register' ? '#fff' : '#6E6E73';
+  }
+
+  async function doLogin() {
+    const email = document.getElementById('liEmail').value.trim();
+    const pass  = document.getElementById('liPass').value;
+    const err   = document.getElementById('liErr');
+    err.style.display = 'none';
+    if (!email || !pass) { err.textContent = 'Please fill in all fields.'; err.style.display = 'block'; return; }
+    try {
+      const res = await fetch(`${API}/users/login`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ email, password: pass })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.setItem(AUTH_KEY, JSON.stringify({ userId: data.userId, name: data.name, email: data.email }));
+        closeAuthModal();
+        updateNavAuth();
+        showToast('Welcome back, ' + data.name.split(' ')[0] + '!');
+      } else {
+        err.textContent = data.message || 'Invalid credentials.';
+        err.style.display = 'block';
+      }
+    } catch {
+      err.textContent = 'Cannot reach server. Is the backend running?';
+      err.style.display = 'block';
+    }
+  }
+
+  async function doRegister() {
+    const name  = document.getElementById('reName').value.trim();
+    const email = document.getElementById('reEmail').value.trim();
+    const phone = document.getElementById('rePhone').value.trim();
+    const pass  = document.getElementById('rePass').value;
+    const err   = document.getElementById('reErr');
+    err.style.display = 'none';
+    if (!name || !email || !pass) { err.textContent = 'Name, email and password are required.'; err.style.display = 'block'; return; }
+    try {
+      const res = await fetch(`${API}/users/register`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ name, email, password: pass, phone })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast('Account created! Please sign in.');
+        switchTab('login');
+        document.getElementById('liEmail').value = email;
+      } else {
+        err.textContent = data.message || 'Registration failed.';
+        err.style.display = 'block';
+      }
+    } catch {
+      err.textContent = 'Cannot reach server. Is the backend running?';
+      err.style.display = 'block';
+    }
+  }
+
+  function doLogout() {
+    localStorage.removeItem(AUTH_KEY);
+    updateNavAuth();
+    showToast('Signed out.');
+  }
+
+  function goToPlanner() {
+    if (getUser()) { window.location = 'planner.html'; }
+    else { openAuthModal(); showToast('Please sign in first.'); }
+  }
+
+  updateNavAuth();
 </script>
 </body>
 </html>
