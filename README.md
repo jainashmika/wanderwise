@@ -1,6 +1,6 @@
-# WanderWise — Smart Travel Planner 🌏
+# WanderWise - Smart Travel Planner 
 
-A full-stack travel planning web application built for **Manipal Academy of Higher Education (MAHE)**.
+A full-stack travel planning web application.
 Plan trips across 15 Indian destinations with hotel booking, transport search, AI chatbot assistance, and an animated frontend.
 
 ---
@@ -19,14 +19,14 @@ Plan trips across 15 Indian destinations with hotel booking, transport search, A
 
 ## Features
 
-- **15 Indian Destinations** — Goa, Manali, Jaipur, Kerala, Ladakh, Udaipur, Rishikesh, Darjeeling, Shimla, Varanasi, Agra, Coorg, Ooty, Mysore, Hampi
-- **Hotel Search & Booking** — 75+ hotels with price, rating, amenities
-- **Transport Search** — Flights, trains, buses between cities
-- **Budget Packages** — 60+ curated packages with day-by-day itineraries
-- **Tourist Spots** — 90+ attractions with entry fees, hours, categories
-- **AI Chatbot "Yami"** — Personalized travel recommendations with conversation memory
-- **Animated UI** — Floating particles, cursor glow, scroll reveal, typewriter effect, card tilt
-- **Turquoise Design System** — Consistent colour theme across all pages
+- **15 Indian Destinations** - Goa, Manali, Jaipur, Kerala, Ladakh, Udaipur, Rishikesh, Darjeeling, Shimla, Varanasi, Agra, Coorg, Ooty, Mysore, Hampi
+- **Hotel Search & Booking** - 75+ hotels with price, rating, amenities
+- **Transport Search** - Flights, trains, buses between cities
+- **Budget Packages** - 60+ curated packages with day-by-day itineraries
+- **Tourist Spots** - 90+ attractions with entry fees, hours, categories
+- **AI Chatbot "Yami"** - Personalized travel recommendations with conversation memory
+- **Animated UI** - Floating particles, cursor glow, scroll reveal, typewriter effect, card tilt
+- **Turquoise Design System** - Consistent colour theme across all pages
 
 ---
 
@@ -37,7 +37,7 @@ wanderwise/
 ├── frontend/
 │   ├── index.html          # Homepage with destination grid + packages
 │   ├── destination.html    # Per-destination page (hero, tabs, spots, hotels)
-│   ├── planner.html        # Trip planner — search, select, book
+│   ├── planner.html        # Trip planner - search, select, book
 │   ├── animations.js       # Global animation engine (particles, orbs, typewriter)
 │   └── chatbot.js          # Yami AI chatbot with conversation memory
 │
@@ -155,5 +155,14 @@ Or paste into Chrome: `file:///path/to/frontend/index.html`
 
 ## Made By
 
-**Ashmika Jain** — Manipal Academy of Higher Education (MAHE)
-B.Tech Computer Science
+**Ashmika Jain** 
+
+
+
+
+<img width="1913" height="903" alt="image" src="https://github.com/user-attachments/assets/313c14ae-43e7-4a3b-8fe2-bad87af42abd" />
+<img width="490" height="812" alt="image" src="https://github.com/user-attachments/assets/c9d98264-b265-4355-b06f-83cc8f90e6e9" />
+<img width="1872" height="882" alt="image" src="https://github.com/user-attachments/assets/034df0f0-921c-478c-bcb3-3426b07d9f07" />
+<img width="1892" height="908" alt="image" src="https://github.com/user-attachments/assets/b0b80c2c-a92f-4d22-a218-6966a23e602a" />
+<img width="1907" height="745" alt="image" src="https://github.com/user-attachments/assets/38e41c32-626a-4e44-80f1-eba315b988f7" />
+<img width="1045" height="771" alt="image" src="https://github.com/user-attachments/assets/f5def74f-a7e8-4cea-a179-1a8eaa3fab0d" />
