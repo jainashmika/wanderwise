@@ -19,3 +19,4 @@ logs/
 
 # Sensitive — do NOT commit real passwords
 # (application.properties is included but with placeholder password)
+.claude/
