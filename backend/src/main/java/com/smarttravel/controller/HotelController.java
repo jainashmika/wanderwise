@@ -16,9 +16,12 @@ public class HotelController {
     @Autowired
     private HotelRepository hotelRepository;
 
-    // GET /api/hotels — returns ALL hotels
+    // GET /api/hotels or /api/hotels?city=Goa — returns hotels
     @GetMapping
-    public List<Hotel> getAllHotels() {
+    public List<Hotel> getAllHotels(@RequestParam(required = false) String city) {
+        if (city != null && !city.trim().isEmpty()) {
+            return hotelRepository.findByDestination_City(city);
+        }
         return hotelRepository.findAll();
     }
 

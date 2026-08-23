@@ -15,9 +15,12 @@ public class PackageController {
     @Autowired
     private BudgetPackageRepository packageRepository;
 
-    // GET /api/packages
+    // GET /api/packages or /api/packages?city=Goa
     @GetMapping
-    public List<BudgetPackage> getAllPackages() {
+    public List<BudgetPackage> getAllPackages(@RequestParam(required = false) String city) {
+        if (city != null && !city.trim().isEmpty()) {
+            return packageRepository.findByDestination_City(city);
+        }
         return packageRepository.findAll();
     }
 
@@ -27,6 +30,12 @@ public class PackageController {
         return packageRepository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    // GET /api/packages/destination/{id}
+    @GetMapping("/destination/{id}")
+    public List<BudgetPackage> getByDestinationId(@PathVariable Integer id) {
+        return packageRepository.findByDestination_DestinationId(id);
     }
 
     // GET /api/packages/search?city=Goa&maxCost=20000
@@ -40,3 +49,4 @@ public class PackageController {
         return packageRepository.findAll();
     }
 }
+

@@ -13,13 +13,16 @@ public class TouristSpotController {
     @Autowired
     private TouristSpotRepository spotRepository;
 
-    // GET /api/spots
+    // GET /api/spots or /api/spots?city=Goa
     @GetMapping
-    public List<TouristSpot> getAllSpots() {
+    public List<TouristSpot> getAllSpots(@RequestParam(required = false) String city) {
+        if (city != null && !city.trim().isEmpty()) {
+            return spotRepository.findByDestination_City(city);
+        }
         return spotRepository.findAll();
     }
 
-    // GET /api/spots?city=Goa
+    // GET /api/spots/search?city=Goa
     @GetMapping("/search")
     public List<TouristSpot> getSpotsByCity(@RequestParam String city) {
         return spotRepository.findByDestination_City(city);

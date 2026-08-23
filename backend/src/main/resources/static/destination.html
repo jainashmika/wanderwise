@@ -511,7 +511,7 @@
 </div>
 
 <script>
-const API = 'http://localhost:8080/api';
+const API = (window.location.protocol.startsWith('http') ? window.location.origin : 'http://localhost:8085') + '/api';
 
 /* ── Destination data ── */
 const DEST_DATA = {
@@ -986,25 +986,28 @@ function spotType(name='') {
 
 function renderSpots(spots) {
   const c = document.getElementById('spotsContainer');
-  if(!spots.length) {
+  if(!spots || !spots.length) {
     c.innerHTML = `<div class="empty-msg"><div class="big">🗺️</div><p>Spots information coming soon for this destination.</p></div>`;
     return;
   }
   c.innerHTML = `<div class="spots-grid">` + spots.map((s,i) => {
-    const type = spotType(s.spot_name || '');
+    const spotName = s.spotName || s.spot_name || 'Scenic Attraction';
+    const type = spotType(spotName);
     const img  = SPOT_IMGS[type] || SPOT_IMGS.default;
     const badgeCls = `badge-${type}`;
     const label = type.charAt(0).toUpperCase()+type.slice(1);
+    const cityName = s.destination?.city || s.city || currentDest?.city || 'India';
+    const desc = s.description || ('A must-visit attraction in ' + cityName + '.');
     return `
       <div class="spot-card fade-in" style="animation-delay:${i*0.08}s">
         <div class="spot-img">
-          <img src="${img}" alt="${s.spot_name}" onerror="this.style.background='#eee'"/>
+          <img src="${img}" alt="${spotName}" onerror="this.style.background='#eee'"/>
           <span class="spot-badge ${badgeCls}">${label}</span>
         </div>
         <div class="spot-body">
-          <h3>${s.spot_name}</h3>
-          <p>${s.description || 'A must-visit spot in '+s.city+'.'}</p>
-          <div class="spot-rating">★★★★★ <span style="color:var(--muted);font-weight:400">(Popular)</span></div>
+          <h3>${spotName}</h3>
+          <p>${desc}</p>
+          <div class="spot-rating">★★★★★ <span style="color:var(--muted);font-weight:400">(${s.category || 'Popular'})</span></div>
         </div>
       </div>`;
   }).join('') + `</div>`;
@@ -1023,27 +1026,32 @@ async function loadHotels(city) {
 
 function renderHotels(hotels) {
   const c = document.getElementById('hotelsContainer');
-  if(!hotels.length) {
+  if(!hotels || !hotels.length) {
     c.innerHTML = `<div class="empty-msg"><div class="big">🏨</div><p>Hotel listings coming soon for this destination.</p></div>`;
     return;
   }
   c.innerHTML = `<div class="hotels-grid">` + hotels.map((h,i) => {
-    const stars = '★'.repeat(Math.min(h.star_rating||4,5));
+    const hotelName = h.hotelName || h.hotel_name || 'Comfort Stay';
+    const rawRating = Number(h.rating || h.star_rating || 4.5);
+    const starRating = Math.round(rawRating);
+    const stars = '★'.repeat(Math.max(1, Math.min(starRating, 5)));
     const img   = HOTEL_IMGS[i % HOTEL_IMGS.length];
     const amenities = (h.amenities || 'WiFi, Pool, Breakfast').split(',').slice(0,3);
+    const cityName = h.destination?.city || h.city || currentDest?.city || 'India';
+    const price = Number(h.pricePerNight || h.price_per_night || 2999);
     return `
       <div class="hotel-card fade-in" style="animation-delay:${i*0.1}s">
         <div class="hotel-img">
-          <img src="${img}" alt="${h.hotel_name}" onerror="this.style.background='#eee'"/>
-          <span class="hotel-stars">${stars} ${h.star_rating||4}-Star</span>
+          <img src="${img}" alt="${hotelName}" onerror="this.style.background='#eee'"/>
+          <span class="hotel-stars">${stars} ${rawRating.toFixed(1)} ★</span>
         </div>
         <div class="hotel-body">
-          <div class="hotel-name">${h.hotel_name}</div>
-          <div class="hotel-loc">📍 ${h.city || currentDest.city}</div>
+          <div class="hotel-name">${hotelName}</div>
+          <div class="hotel-loc">📍 ${h.address || cityName}</div>
           <div class="hotel-amenities">
             ${amenities.map(a=>`<span class="amenity-pill">${a.trim()}</span>`).join('')}
           </div>
-          <div class="hotel-price">₹${Number(h.price_per_night||2999).toLocaleString('en-IN')}<span>/night</span></div>
+          <div class="hotel-price">₹${price.toLocaleString('en-IN')}<span>/night</span></div>
         </div>
       </div>`;
   }).join('') + `</div>`;
@@ -1064,9 +1072,9 @@ async function loadPackages(city) {
 
 function getFallbackPackages(city) {
   const base = [
-    {package_name:`${city} Weekend Escape`,  duration_days:3, num_people:2, total_price:9999},
-    {package_name:`${city} Adventure Pack`, duration_days:5, num_people:4, total_price:14999},
-    {package_name:`${city} Luxury Retreat`, duration_days:7, num_people:2, total_price:24999},
+    {packageName:`${city} Weekend Escape`,  durationDays:3, maxPeople:2, totalCost:9999},
+    {packageName:`${city} Adventure Pack`, durationDays:5, maxPeople:4, totalCost:14999},
+    {packageName:`${city} Luxury Retreat`, durationDays:7, maxPeople:2, totalCost:24999},
   ];
   return base;
 }
@@ -1075,21 +1083,26 @@ function renderPackages(pkgs) {
   const c = document.getElementById('pkgsContainer');
   c.innerHTML = `<div class="pkgs-grid">` + pkgs.slice(0,6).map((p,i) => {
     const img = PKG_IMGS[i % PKG_IMGS.length];
+    const pkgName = p.packageName || p.package_name || 'Special Package';
+    const duration = p.durationDays || p.duration_days || 3;
+    const people = p.maxPeople || p.num_people || 2;
+    const cost = Number(p.totalCost || p.total_price || 9999);
+    const pkgId = p.packageId || p.id || '';
     return `
       <div class="pkg-card fade-in" style="animation-delay:${i*0.08}s">
         <div class="pkg-img">
-          <img src="${img}" alt="${p.package_name}" onerror="this.style.background='#eee'"/>
+          <img src="${img}" alt="${pkgName}" onerror="this.style.background='#eee'"/>
           <span class="pkg-label">Best Value</span>
         </div>
         <div class="pkg-body">
-          <h3>${p.package_name}</h3>
+          <h3>${pkgName}</h3>
           <div class="pkg-meta">
-            <span>📅 ${p.duration_days} days</span>
-            <span>👥 ${p.num_people||2} people</span>
+            <span>📅 ${duration} days</span>
+            <span>👥 ${people} people</span>
           </div>
           <div class="pkg-price-row">
-            <div class="pkg-price">₹${Number(p.total_price||9999).toLocaleString('en-IN')}<small>/person</small></div>
-            <button class="book-mini-btn" onclick="window.location.href='planner.html'">Book</button>
+            <div class="pkg-price">₹${cost.toLocaleString('en-IN')}<small>/person</small></div>
+            <button class="book-mini-btn" onclick="window.location.href='planner.html?package=${pkgId}'">Book</button>
           </div>
         </div>
       </div>`;

@@ -654,7 +654,7 @@ WHERE status = 'Pending'
 -- ============================================================
 INSERT INTO Reviews (user_id, hotel_id, spot_id, rating, comment) VALUES
 -- Hotel reviews
-(4,  (SELECT hotel_id FROM Hotels WHERE hotel_name='Hotel Badi Haveli' LIMIT 1),      NULL, 5, 'Absolutely stunning heritage haveli right on the ghats. Lake view from our room was like a painting. The rooftop breakfast watching the boats is an experience we'll never forget.'),
+(4,  (SELECT hotel_id FROM Hotels WHERE hotel_name='Hotel Badi Haveli' LIMIT 1),      NULL, 5, 'Absolutely stunning heritage haveli right on the ghats. Lake view from our room was like a painting. The rooftop breakfast watching the boats is an experience we\'ll never forget.'),
 (5,  (SELECT hotel_id FROM Hotels WHERE hotel_name='Zostel Goa' LIMIT 1),             NULL, 5, 'The perfect Goa hostel! Rooftop bar, incredible social atmosphere, and the staff organised a bonfire beach night that became the highlight of our whole trip.'),
 (6,  (SELECT hotel_id FROM Hotels WHERE hotel_name='Zostel Rishikesh' LIMIT 1),       NULL, 5, 'Perfect location on the Ganges. Fell asleep to the sound of the river and woke up to yoga on the deck. The staff here genuinely care about travellers.'),
 (7,  (SELECT hotel_id FROM Hotels WHERE hotel_name='Kumarakom Lake Resort' LIMIT 1),  NULL, 5, 'Honeymoon dreams come true. Pool villa overlooking the backwaters, private boat rides at dawn, and the breakfast was the best we\'ve ever had in India.'),

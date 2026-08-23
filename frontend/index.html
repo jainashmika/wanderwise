@@ -876,7 +876,7 @@
 <button id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
 <script>
-  const API = 'http://localhost:8080/api';
+  const API = (window.location.protocol.startsWith('http') ? window.location.origin : 'http://localhost:8085') + '/api';
 
   /* ── Destination data ── */
   const DEST = {

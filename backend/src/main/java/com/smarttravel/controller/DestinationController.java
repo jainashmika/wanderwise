@@ -18,4 +18,12 @@ public class DestinationController {
     public List<Destination> getAllDestinations() {
         return destinationRepository.findAll();
     }
+
+    // GET /api/destinations/{id}
+    @GetMapping("/{id}")
+    public org.springframework.http.ResponseEntity<Destination> getById(@PathVariable Integer id) {
+        return destinationRepository.findById(id)
+                .map(org.springframework.http.ResponseEntity::ok)
+                .orElse(org.springframework.http.ResponseEntity.notFound().build());
+    }
 }

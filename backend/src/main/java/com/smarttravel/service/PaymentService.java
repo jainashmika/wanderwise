@@ -35,13 +35,19 @@ public class PaymentService {
         Payment payment = new Payment();
         payment.setBooking(booking.get());
         payment.setAmount(amount);
-        payment.setPaymentMethod(Payment.PaymentMethod.valueOf(paymentMethod));
+        String normalizedMethod = paymentMethod.trim().replace(" ", "_");
+        payment.setPaymentMethod(Payment.PaymentMethod.valueOf(normalizedMethod));
         payment.setStatus(Payment.PaymentStatus.Pending);
         payment.setTransactionId(generateTransactionId());
         payment.setPaymentDate(LocalDateTime.now());
 
         // Simulate payment processing (in real scenario, call payment gateway)
         payment.setStatus(Payment.PaymentStatus.Success);
+
+        // Update booking status to Confirmed
+        Booking b = booking.get();
+        b.setStatus(Booking.BookingStatus.Confirmed);
+        bookingRepository.save(b);
 
         return paymentRepository.save(payment);
     }

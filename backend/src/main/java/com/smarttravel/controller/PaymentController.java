@@ -28,14 +28,18 @@ public class PaymentController {
     @PostMapping("/process")
     public ResponseEntity<?> processPayment(@RequestBody Map<String, Object> payload) {
         try {
-            Integer bookingId = (Integer) payload.get("bookingId");
-            BigDecimal amount = new BigDecimal(payload.get("amount").toString());
-            String paymentMethod = (String) payload.get("paymentMethod");
+            if (payload.get("bookingId") == null || payload.get("amount") == null || payload.get("paymentMethod") == null) {
+                return ResponseEntity.badRequest()
+                    .body(new ErrorResponse("bookingId, amount, and paymentMethod are required"));
+            }
+            Integer bookingId = Integer.valueOf(payload.get("bookingId").toString().trim());
+            BigDecimal amount = new BigDecimal(payload.get("amount").toString().trim());
+            String paymentMethod = payload.get("paymentMethod").toString().trim();
 
             // Validate payment method
             if (!isValidPaymentMethod(paymentMethod)) {
                 return ResponseEntity.badRequest()
-                    .body(new ErrorResponse("Invalid payment method"));
+                    .body(new ErrorResponse("Invalid payment method: " + paymentMethod));
             }
 
             // Validate amount
@@ -146,8 +150,10 @@ public class PaymentController {
      * Validate if payment method is valid
      */
     private boolean isValidPaymentMethod(String method) {
+        if (method == null || method.trim().isEmpty()) return false;
+        String normalized = method.trim().replace(" ", "_");
         try {
-            Payment.PaymentMethod.valueOf(method);
+            Payment.PaymentMethod.valueOf(normalized);
             return true;
         } catch (IllegalArgumentException e) {
             return false;

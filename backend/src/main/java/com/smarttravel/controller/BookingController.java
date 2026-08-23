@@ -26,13 +26,32 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<Map<String, Object>> createBooking(@RequestBody Map<String, Object> body) {
         try {
-            Integer userId       = (Integer) body.get("userId");
-            Integer hotelId      = (Integer) body.get("hotelId");
-            Integer transportId  = (Integer) body.get("transportId");
-            Integer packageId    = (Integer) body.get("packageId");
-            LocalDate checkIn    = LocalDate.parse((String) body.get("checkIn"));
-            LocalDate checkOut   = LocalDate.parse((String) body.get("checkOut"));
-            Integer numPeople    = (Integer) body.getOrDefault("numPeople", 1);
+            if (body.get("userId") == null || body.get("userId").toString().trim().isEmpty()) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("message", "User ID is required");
+                return ResponseEntity.badRequest().body(response);
+            }
+            Integer userId = Integer.valueOf(body.get("userId").toString().trim());
+            Integer hotelId = (body.get("hotelId") != null && !body.get("hotelId").toString().trim().isEmpty())
+                    ? Integer.valueOf(body.get("hotelId").toString().trim()) : null;
+            Integer transportId = (body.get("transportId") != null && !body.get("transportId").toString().trim().isEmpty())
+                    ? Integer.valueOf(body.get("transportId").toString().trim()) : null;
+            Integer packageId = (body.get("packageId") != null && !body.get("packageId").toString().trim().isEmpty())
+                    ? Integer.valueOf(body.get("packageId").toString().trim()) : null;
+
+            LocalDate checkIn = null;
+            if (body.get("checkIn") != null && !body.get("checkIn").toString().trim().isEmpty()) {
+                checkIn = LocalDate.parse(body.get("checkIn").toString().trim());
+            }
+            LocalDate checkOut = null;
+            if (body.get("checkOut") != null && !body.get("checkOut").toString().trim().isEmpty()) {
+                checkOut = LocalDate.parse(body.get("checkOut").toString().trim());
+            }
+
+            Integer numPeople = 1;
+            if (body.get("numPeople") != null && !body.get("numPeople").toString().trim().isEmpty()) {
+                numPeople = Integer.valueOf(body.get("numPeople").toString().trim());
+            }
 
             Booking booking = bookingService.createBooking(
                     userId, hotelId, transportId, packageId, checkIn, checkOut, numPeople);
@@ -45,6 +64,10 @@ public class BookingController {
         } catch (IllegalArgumentException e) {
             Map<String, Object> response = new HashMap<>();
             response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Booking creation failed: " + e.getMessage());
             return ResponseEntity.badRequest().body(response);
         }
     }

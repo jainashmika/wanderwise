@@ -625,7 +625,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  const API = 'http://localhost:8080/api';
+  const API = (window.location.protocol.startsWith('http') ? window.location.origin : 'http://localhost:8085') + '/api';
 
   const DEST_IMGS = {
     'Goa':        'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=600&q=80',

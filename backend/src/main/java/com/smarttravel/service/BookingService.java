@@ -44,9 +44,13 @@ public class BookingService {
             if (hotelOpt.isPresent()) {
                 Hotel hotel = hotelOpt.get();
                 booking.setHotel(hotel);
-                // Calculate hotel cost: price_per_night x number of nights
-                long nights = checkOut.toEpochDay() - checkIn.toEpochDay();
-                total = total.add(hotel.getPricePerNight().multiply(BigDecimal.valueOf(nights)));
+                // Calculate hotel cost: price_per_night x number of nights x numPeople
+                long nights = 1;
+                if (checkIn != null && checkOut != null && checkOut.isAfter(checkIn)) {
+                    nights = checkOut.toEpochDay() - checkIn.toEpochDay();
+                }
+                int people = (numPeople != null && numPeople > 0) ? numPeople : 1;
+                total = total.add(hotel.getPricePerNight().multiply(BigDecimal.valueOf(nights * people)));
             }
         }
 

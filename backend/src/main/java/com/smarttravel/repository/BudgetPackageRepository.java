@@ -8,6 +8,8 @@ import java.util.List;
 public interface BudgetPackageRepository extends JpaRepository<BudgetPackage, Integer> {
 
     List<BudgetPackage> findByDestination_City(String city);
+    List<BudgetPackage> findByDestination_DestinationId(Integer destinationId);
     List<BudgetPackage> findByTotalCostLessThanEqual(BigDecimal maxCost);
     List<BudgetPackage> findByDurationDays(Integer days);
 }
+

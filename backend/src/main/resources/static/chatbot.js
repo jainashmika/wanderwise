@@ -6,7 +6,7 @@
 (function () {
   'use strict';
 
-  const YAMI_API = 'http://localhost:8080/api';
+  const YAMI_API = (window.location.protocol.startsWith('http') ? window.location.origin : 'http://localhost:8085') + '/api';
 
   /* ── Conversation Memory ── */
   const memory = {

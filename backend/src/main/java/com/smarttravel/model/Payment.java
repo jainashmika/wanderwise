@@ -26,7 +26,7 @@ public class Payment {
     @Column(name = "amount", nullable = false)
     private BigDecimal amount;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = PaymentMethodConverter.class)
     @Column(name = "payment_method", nullable = false)
     private PaymentMethod paymentMethod;
 

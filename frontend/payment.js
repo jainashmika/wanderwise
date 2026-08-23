@@ -6,7 +6,7 @@
 (function () {
   'use strict';
 
-  const API_BASE = 'http://localhost:8080/api';
+  const API_BASE = (window.location.protocol.startsWith('http') ? window.location.origin : 'http://localhost:8085') + '/api';
   const CURRENCY = '₹';
 
   // Tax calculation: 18% GST (India)

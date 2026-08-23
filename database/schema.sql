@@ -62,7 +62,7 @@ CREATE TABLE Hotels (
 -- ============================================================
 CREATE TABLE Transport (
     transport_id     INT AUTO_INCREMENT PRIMARY KEY,
-    type             ENUM('Bus','Train','Flight') NOT NULL,
+    type             VARCHAR(50)   NOT NULL,
     operator_name    VARCHAR(100),
     source           VARCHAR(100)  NOT NULL,
     destination      VARCHAR(100)  NOT NULL,
@@ -137,7 +137,7 @@ CREATE TABLE Bookings (
     check_out_date   DATE,
     num_people       INT           DEFAULT 1,
     booking_date     TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
-    status           ENUM('Pending','Confirmed','Cancelled') DEFAULT 'Pending',
+    status           VARCHAR(50)   DEFAULT 'Pending',
     total_amount     DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (user_id)        REFERENCES Users(user_id)            ON DELETE CASCADE,
     FOREIGN KEY (hotel_id)       REFERENCES Hotels(hotel_id)          ON DELETE SET NULL,
@@ -155,8 +155,8 @@ CREATE TABLE Payments (
     booking_id       INT           NOT NULL,
     payment_date     TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
     amount           DECIMAL(10,2) NOT NULL,
-    payment_method   ENUM('Credit Card','Debit Card','UPI','Net Banking') NOT NULL,
-    status           ENUM('Success','Failed','Pending') DEFAULT 'Pending',
+    payment_method   VARCHAR(50)   NOT NULL,
+    status           VARCHAR(50)   DEFAULT 'Pending',
     transaction_id   VARCHAR(100)  UNIQUE,
     FOREIGN KEY (booking_id) REFERENCES Bookings(booking_id)
         ON DELETE CASCADE
