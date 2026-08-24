@@ -1,0 +1,10 @@
+.git/
+.github/
+.claude/
+.gemini/
+backend/target/
+javafx-client/
+*.log
+*.tmp
+export_dump.txt
+build_data_file.js
